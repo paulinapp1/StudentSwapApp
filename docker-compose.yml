@@ -1,0 +1,80 @@
+
+
+services:
+  # Listings Service
+  listingsservice.api:
+    build:
+      context: ./ListingsService.API
+      dockerfile: Dockerfile
+    ports:
+      - "${LISTINGS_API_PORT}:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=Host=listingsdb;Port=5432;Database=${POSTGRES_DB_LISTINGS};Username=${POSTGRES_USER_LISTINGS};Password=${POSTGRES_PASSWORD_LISTINGS}
+    depends_on:
+      - listingsdb
+
+  listingsdb:
+    image: postgres:14-alpine
+    container_name: listingsdb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_LISTINGS}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_LISTINGS}
+      - POSTGRES_DB=${POSTGRES_DB_LISTINGS}
+    volumes:
+      - listings-data:/var/lib/postgresql/data
+
+  # Users Service
+  studentswapapp.api:
+    build:
+      context: ./StudentSwapApp
+      dockerfile: Dockerfile
+    ports:
+      - "${USERS_API_PORT}:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=Host=usersdb;Port=5432;Database=${POSTGRES_DB_USERS};Username=${POSTGRES_USER_USERS};Password=${POSTGRES_PASSWORD_USERS}
+    depends_on:
+      - usersdb
+
+  usersdb:
+    image: postgres:14-alpine
+    container_name: usersdb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_USERS}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_USERS}
+      - POSTGRES_DB=${POSTGRES_DB_USERS}
+    ports:
+      - "5433:5432"  # Different external port to avoid conflicts
+    volumes:
+      - users-data:/var/lib/postgresql/data
+
+  # Purchase Service
+  purchaseservice.api:
+    build:
+      context: ./PurchaseService.API
+      dockerfile: Dockerfile
+    ports:
+      - "${PURCHASE_API_PORT}:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=Host=purchasedb;Port=5432;Database=${POSTGRES_DB_PURCHASE};Username=${POSTGRES_USER_PURCHASE};Password=${POSTGRES_PASSWORD_PURCHASE}
+    depends_on:
+      - purchasedb
+
+  purchasedb:
+    image: postgres:14-alpine
+    container_name: purchasedb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_PURCHASE}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PURCHASE}
+      - POSTGRES_DB=${POSTGRES_DB_PURCHASE}
+    ports:
+      - "5434:5432"  # Different external port
+    volumes:
+      - purchase-data:/var/lib/postgresql/data
+
+volumes:
+  listings-data:
+  users-data:
+  purchase-data:
