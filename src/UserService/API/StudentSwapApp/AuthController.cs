@@ -85,7 +85,6 @@ namespace StudentSwapApp.API
         {
             var apiKey = _config["Firebase:WebApiKey"];
 
-            // Use the correct endpoint: accounts:lookup
             var request = new HttpRequestMessage(HttpMethod.Post, $"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={apiKey}")
             {
                 Content = new StringContent(
