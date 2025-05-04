@@ -19,7 +19,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_LISTINGS}
       - POSTGRES_DB=${POSTGRES_DB_LISTINGS}
     ports:
-      - "5432:5432"  # Expose PostgreSQL port to host
+      - "5432:5432" 
     volumes:
       - listings-data:/var/lib/postgresql/data
   # Users Service
@@ -42,7 +42,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_USERS}
       - POSTGRES_DB=${POSTGRES_DB_USERS}
     ports:
-      - "5433:5432"  # Already exposing port to host
+      - "5433:5432"  
     volumes:
       - users-data:/var/lib/postgresql/data
   # Purchase Service
@@ -65,7 +65,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PURCHASE}
       - POSTGRES_DB=${POSTGRES_DB_PURCHASE}
     ports:
-      - "5434:5432"  # Already exposing port to host
+      - "5434:5432" 
     volumes:
       - purchase-data:/var/lib/postgresql/data
 volumes:
