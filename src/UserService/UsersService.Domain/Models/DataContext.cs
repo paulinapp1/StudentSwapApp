@@ -16,7 +16,7 @@ namespace UsersService.Domain.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserModel>()
-                .HasKey(u => u.email);
+                .HasKey(u => u.UID);
         }
     }
 

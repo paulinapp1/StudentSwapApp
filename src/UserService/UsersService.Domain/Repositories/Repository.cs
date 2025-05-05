@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,19 +21,12 @@ namespace UsersService.Domain.Repositories
             return user;
         }
 
-        public Task<UserModel> GetUserAsync(int id)
+        public async Task<UserModel> GetUserAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _dataContext.Users.Where(x => x.UID == id).FirstOrDefaultAsync();
+
         }
 
-        public Task<List<UserModel>> GetUsersAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserModel> UpdateUserAsync(UserModel user)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }
