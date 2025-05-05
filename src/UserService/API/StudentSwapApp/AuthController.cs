@@ -26,6 +26,28 @@ namespace StudentSwapApp.API
             _httpClient = new HttpClient();
             _repository = repository;
         }
+        private async Task<string> MakeApiCallWithToken(string idToken)
+        {
+            var apiKey = _config["Firebase:WebApiKey"];
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={apiKey}")
+            {
+                Content = new StringContent(
+                    JsonConvert.SerializeObject(new { idToken }),
+                    Encoding.UTF8,
+                    "application/json"
+                )
+            };
+
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+
+            throw new Exception("API request failed: " + await response.Content.ReadAsStringAsync());
+        }
 
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] AuthRequest request)
@@ -34,7 +56,7 @@ namespace StudentSwapApp.API
 
             if (string.IsNullOrEmpty(apiKey))
             {
-                return BadRequest("API Key is missing or invalid.");
+                return BadRequest("Klucza nie ma :( ");
             }
             var payload = new
             {
@@ -69,40 +91,24 @@ namespace StudentSwapApp.API
 
         }
         [HttpPost("signin")]
-        public async Task<IActionResult> SignInAsync([FromBody] AuthRequest request)
+        public async Task<IActionResult> SignInAsync([FromBody] SignInRequest request)
         {
             
             var idToken = await _firebaseAuthService.SignInWithEmailPasswordAsync(request.Email, request.Password);
-
+            
         
             var apiResponse = await MakeApiCallWithToken(idToken);
 
             return Ok(apiResponse);
         }
 
-
-        private async Task<string> MakeApiCallWithToken(string idToken)
+        [HttpPost("logout")]
+        public IActionResult Logout()
         {
-            var apiKey = _config["Firebase:WebApiKey"];
-
-            var request = new HttpRequestMessage(HttpMethod.Post, $"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={apiKey}")
-            {
-                Content = new StringContent(
-                    JsonConvert.SerializeObject(new { idToken }),
-                    Encoding.UTF8,
-                    "application/json"
-                )
-            };
-
-            var response = await _httpClient.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadAsStringAsync();
-            }
-
-            throw new Exception("API request failed: " + await response.Content.ReadAsStringAsync());
+            _firebaseAuthService.ClearAuthCookies();
+            return Ok(new {Message = "Wylogowano"});
         }
+        
 
     }
 }

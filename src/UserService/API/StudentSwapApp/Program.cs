@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using UsersService.Application;
 using UsersService.Domain.Models;
@@ -16,10 +17,16 @@ builder.Services.AddScoped<FirebaseAuthService>();
 builder.Services.AddScoped<IRepository, Repository>(); 
 builder.Services.AddHttpClient();
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.MinimumSameSitePolicy = SameSiteMode.Strict;
+    options.HttpOnly = HttpOnlyPolicy.Always;
+    options.Secure = CookieSecurePolicy.Always;
+});
 
 var app = builder.Build();
 app.UseMiddleware<FirebaseAuthGuard>();
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
