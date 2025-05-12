@@ -9,9 +9,12 @@ namespace UsersService.Domain.Repositories
 {
     public interface IRepository
     {
-        Task<UserModel> GetUserAsync (string id);
+        Task<UserModel> GetUserAsync (string username);
         
         Task<UserModel> AddUserAsync(UserModel user);
+
+        Task<bool> UserAlreadyExistsAsync(string username);
+        Task<bool> EmailAlreadyExistsAsync(string email);
    
     }
 }

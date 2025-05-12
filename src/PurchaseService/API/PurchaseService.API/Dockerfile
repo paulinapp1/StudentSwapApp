@@ -15,6 +15,7 @@ WORKDIR /src
 COPY ["PurchaseService.API/PurchaseService.API.csproj", "PurchaseService.API/"]
 RUN dotnet restore "./PurchaseService.API/PurchaseService.API.csproj"
 COPY . .
+COPY ./data/public.key /app/data/public.key
 WORKDIR "/src/PurchaseService.API"
 RUN dotnet build "./PurchaseService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

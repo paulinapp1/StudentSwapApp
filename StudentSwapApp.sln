@@ -50,11 +50,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UsersService.Domain", "src\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{CAB59418-6D3B-4BCA-80A0-58C837E48C2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentSwapApp.API", "src\UserService\API\StudentSwapApp\StudentSwapApp.API.csproj", "{91C3EB84-2C14-4878-B09F-E6215E87E571}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StudentSwapApp.API", "src\UserService\API\StudentSwapApp\StudentSwapApp.API.csproj", "{91C3EB84-2C14-4878-B09F-E6215E87E571}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserService", "UserService", "{FD2A62D4-95CB-490D-8ED7-CF5BD1DA5F51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Tests", "tests\UserService\UserService.Tests\UserService.Tests.csproj", "{045905F5-DC8F-4140-9A26-782A0E1ED0D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService.Tests", "tests\UserService\UserService.Tests\UserService.Tests.csproj", "{045905F5-DC8F-4140-9A26-782A0E1ED0D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

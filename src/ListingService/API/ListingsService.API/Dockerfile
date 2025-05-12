@@ -15,6 +15,7 @@ WORKDIR /src
 COPY ["ListingsService.API/ListingsService.API.csproj", "ListingsService.API/"]
 RUN dotnet restore "./ListingsService.API/ListingsService.API.csproj"
 COPY . .
+COPY ./data/public.key /app/data/public.key
 WORKDIR "/src/ListingsService.API"
 RUN dotnet build "./ListingsService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 

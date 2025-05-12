@@ -15,6 +15,8 @@ WORKDIR /src
 COPY ["StudentSwapApp/StudentSwapApp.csproj", "StudentSwapApp/"]
 RUN dotnet restore "./StudentSwapApp/StudentSwapApp.csproj"
 COPY . .
+COPY ./data/public.key /app/data/public.key
+COPY ./data/private.key /app/data/private.key
 WORKDIR "/src/StudentSwapApp"
 RUN dotnet build "./StudentSwapApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
@@ -27,4 +29,9 @@ RUN dotnet publish "./StudentSwapApp.csproj" -c $BUILD_CONFIGURATION -o /app/pub
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+
+
+
+
 ENTRYPOINT ["dotnet", "StudentSwapApp.dll"]

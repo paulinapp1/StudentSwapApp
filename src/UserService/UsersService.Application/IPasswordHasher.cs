@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace UsersService.Application
 {
-    public class SignInRequest
+    public interface IPasswordHasher
     {
-        public string Email {  get; set; }
-        public string Password { get; set; }
+        string Hash(string password);
+        bool VerifyPassword(string password, string providedPassword);
     }
 }

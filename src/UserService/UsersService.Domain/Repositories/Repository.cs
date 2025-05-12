@@ -21,12 +21,24 @@ namespace UsersService.Domain.Repositories
             return user;
         }
 
-        public async Task<UserModel> GetUserAsync(string id)
+       
+
+        public async Task<bool> EmailAlreadyExistsAsync(string email)
         {
-            return await _dataContext.Users.Where(x => x.UID == id).FirstOrDefaultAsync();
+                return await _dataContext.Users.AnyAsync(u => u.email == email);
+        }
+
+        public async Task<UserModel> GetUserAsync(string username) //zmienic na username
+        {
+            return await _dataContext.Users.Where(x => x.username == username).FirstOrDefaultAsync();
 
         }
 
-        
+
+
+        public async Task<bool> UserAlreadyExistsAsync(string username)
+        {
+           return await _dataContext.Users.AnyAsync(u => u.username == username);
+        }
     }
 }

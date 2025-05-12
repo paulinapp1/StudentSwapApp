@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,19 +8,10 @@ namespace UsersService.Application
 {
     public class AuthResponse
     {
-        [JsonProperty("idToken")]
-        public string IdToken { get; set; }
-
-        [JsonProperty("email")]
-        public string Email { get; set; }
-
-        [JsonProperty("refreshToken")]
-        public string RefreshToken { get; set; }
-
-        [JsonProperty("expiresIn")]
-        public string ExpiresIn { get; set; }
-
-        [JsonProperty("localId")]
-        public string LocalId { get; set; }
+        public string Token { get; set; }
+        public int UserId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string username { get; set; }
     }
 }
