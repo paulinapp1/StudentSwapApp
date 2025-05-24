@@ -10,6 +10,7 @@ using UsersService.Application;
 using UsersService.Domain;
 using UsersService.Domain.Models;
 using UsersService.Domain.Repositories;
+using UsersService.Domain.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,8 +63,8 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(options =>
 {
     var rsa = RSA.Create();
-    rsa.ImportFromPem(File.ReadAllText("./data/private.key"));
-    var publicKey = new RsaSecurityKey(rsa);
+    rsa.ImportFromPem(File.ReadAllText("./data/public.key")); 
+    var rsaKey = new RsaSecurityKey(rsa);
 
     var jwtConfig = jwtSettings.Get<JwtSettings>();
     options.TokenValidationParameters = new TokenValidationParameters
@@ -74,7 +75,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtConfig.Issuer,
         ValidAudience = jwtConfig.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key))
+        IssuerSigningKey = rsaKey
     };
 });
 builder.Services.AddAuthorization();
@@ -102,6 +103,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+
+var seeder = new AdminSeeder(
+    services.GetRequiredService<IRepository>(),
+    services.GetRequiredService<IPasswordHasher>()
+);
+
+await seeder.SeedAsync();
+
 
 app.UseHttpsRedirection();
 

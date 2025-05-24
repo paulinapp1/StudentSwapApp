@@ -1,9 +1,9 @@
-﻿using StudentSwapApp.API;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UsersService.Application.DTO;
 
 namespace UsersService.Application
 {

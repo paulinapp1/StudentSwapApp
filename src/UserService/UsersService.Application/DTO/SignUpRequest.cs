@@ -1,4 +1,4 @@
-﻿namespace StudentSwapApp.API
+﻿namespace UsersService.Application.DTO
 {
     public class SignUpRequest
     {

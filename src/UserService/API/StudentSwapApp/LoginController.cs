@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UsersService.Application;
+using UsersService.Application.DTO;
 using UsersService.Application.Exceptions;
 
 namespace StudentSwapApp.API

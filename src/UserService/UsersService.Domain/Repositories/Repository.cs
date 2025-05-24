@@ -27,11 +27,17 @@ namespace UsersService.Domain.Repositories
                 return await _dataContext.Users.AnyAsync(u => u.email == email);
         }
 
-        public async Task<UserModel> GetUserAsync(string username) //zmienic na username
+        public async Task<UserModel> GetUserAsync(string username)
         {
             return await _dataContext.Users.Where(x => x.username == username).FirstOrDefaultAsync();
 
         }
+        public async Task<UserModel> GetUserByIdAsync(int Id)
+        {
+            return await _dataContext.Users.Where(x => x.Id == Id).FirstOrDefaultAsync();
+
+        }
+
 
 
 
@@ -41,7 +47,7 @@ namespace UsersService.Domain.Repositories
         }
         public async Task<UserModel> UpdateUserAsync(UserModel user)
         {
-            var existingUser = await _dataContext.Users.FindAsync(user.username);
+            var existingUser = await _dataContext.Users.FindAsync(user.Id);
             if (existingUser == null)
             {
                 throw new KeyNotFoundException($"User with ID {user.Id} not found.");

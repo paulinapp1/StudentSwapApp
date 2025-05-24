@@ -10,7 +10,8 @@ namespace UsersService.Domain.Repositories
     public interface IRepository
     {
         Task<UserModel> GetUserAsync (string username);
-        
+        Task<UserModel> GetUserByIdAsync(int Id);
+
         Task<UserModel> AddUserAsync(UserModel user);
 
         Task<bool> UserAlreadyExistsAsync(string username);
