@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using UsersService.Domain.Models;
 using UsersService.Domain.Repositories;
 
 namespace StudentSwapApp.API
@@ -14,8 +16,47 @@ namespace StudentSwapApp.API
             _repository = repository;
             _httpClient = httpClient;
         }
+        [HttpPut("{username}")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserModel updatedUser)
+        {
+            if (id != updatedUser.Id)
+            {
+                return BadRequest("User ID mismatch.");
+            }
 
-        [HttpGet("getUserByID")]
+            try
+            {
+                var user = await _repository.UpdateUserAsync(updatedUser);
+                return Ok(user);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"User with ID {id} not found.");
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        // DELETE User - only for role 'Admin'
+        [HttpDelete("{username}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUser(string username)
+        {
+            var deleted = await _repository.DeleteUserAsync(username);
+
+            if (!deleted)
+            {
+                return NotFound($"User with username '{username}' not found.");
+            }
+
+            return NoContent();
+        }
+    
+
+    [HttpGet("getUserByID")]
         public async Task<IActionResult> GetUserByID(string id)
         {
             try

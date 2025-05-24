@@ -13,6 +13,7 @@ namespace UsersService.Application
     {
         private readonly PasswordHasher<Microsoft.AspNet.Identity.EntityFramework.IdentityUser> _hasher = new();
 
+
         public string Hash(string password)
         {
             return _hasher.HashPassword(null, password);

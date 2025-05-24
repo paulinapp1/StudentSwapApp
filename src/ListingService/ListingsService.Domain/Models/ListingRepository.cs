@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,16 +26,23 @@ namespace ListingsService.Domain.Models
         public Task<bool> DeleteAsync(int id)
         {
             throw new NotImplementedException();
+
         }
 
-        public Task<Listing> GetByIdAsync(int id)
+        public async Task<Listing> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dataContext.Listings.FindAsync(id);
         }
 
-        public Task<Listing> UpdateAsync(Listing listing)
+        public async Task<Listing> UpdateAsync(Listing listing)
         {
-            throw new NotImplementedException();
+            _dataContext.Listings.Update(listing);
+            await _dataContext.SaveChangesAsync();
+            return listing;
+        }
+        public async Task<List<Listing>> GetAllAsync()
+        {
+            return await _dataContext.Listings.ToListAsync();
         }
     }
 }

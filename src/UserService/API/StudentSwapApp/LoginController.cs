@@ -19,6 +19,7 @@ namespace StudentSwapApp.API
         [HttpPost("signUp")]
         public async Task<IActionResult> SignUp([FromBody] SignUpRequest signUpRequest)
         {
+            
             try
             {
                 var authResponse = await _loginService.SignUp(signUpRequest);

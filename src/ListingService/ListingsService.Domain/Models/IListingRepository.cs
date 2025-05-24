@@ -13,6 +13,7 @@ namespace ListingsService.Domain.Models
         Task<bool> DeleteAsync(int id);
         Task<Listing> GetByIdAsync(int id);
 
+        Task<List<Listing>> GetAllAsync();
 
     }
 }

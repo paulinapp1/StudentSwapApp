@@ -17,7 +17,12 @@ namespace ListingsService.API.Controllers
             _addListingService = addListingService;
         }
 
-        
+        [HttpGet("getAllListings")]
+        public async Task<ActionResult> GetAllListings()
+        {
+            var result = await  _listingRepository.GetAllAsync();
+            return Ok(result);
+        }
 
     }
 }

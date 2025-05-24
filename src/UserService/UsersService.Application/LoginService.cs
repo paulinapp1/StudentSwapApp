@@ -30,17 +30,76 @@ namespace UsersService.Application
         }
         public async Task<AuthResponse> SignUp(SignUpRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.FirstName)) throw new ArgumentException("First name is required");
-            if (string.IsNullOrWhiteSpace(request.LastName)) throw new ArgumentException("Last name is required");
+            
+            if (string.IsNullOrWhiteSpace(request.FirstName))
+            {
+                Console.WriteLine("ERROR: First name is missing.");
+                throw new ArgumentException("First name is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.LastName))
+            {
+       
+                throw new ArgumentException("Last name is required");
+            }
+
             if (string.IsNullOrWhiteSpace(request.username))
+            {
+     
                 throw new ArgumentException("Username is required.");
-            if (string.IsNullOrWhiteSpace(request.email)) throw new ArgumentException("Email is required");
-            if (string.IsNullOrWhiteSpace(request.password) || request.password.Length < 8) throw new ArgumentException("to short password");
-            if (await _repository.UserAlreadyExistsAsync(request.username)) throw new ArgumentException("this username is taken :( ");
-            if (await _repository.EmailAlreadyExistsAsync(request.email)) throw new ArgumentException("there already exists an account with this email address");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.email))
+            {
+          
+                throw new ArgumentException("Email is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.password) || request.password.Length < 8)
+            {
+               
+                throw new ArgumentException("Password must be at least 8 characters long.");
+            }
+
+            try
+            {
+                Console.WriteLine($"Checking if username exists: {request.username}");
+                var exists = await _repository.UserAlreadyExistsAsync(request.username);
+                Console.WriteLine($"User already exists: {exists}");
+
+                if (exists)
+                {
+ 
+                    throw new ArgumentException("Username taken");
+                }
+            }
+            catch (Exception ex)
+            {
+               
+                throw;
+            }
+
+        
+            try
+            {
+                var emailExists = await _repository.EmailAlreadyExistsAsync(request.email);
+                Console.WriteLine($"Email already exists: {emailExists}");
+
+                if (emailExists)
+                {
+                    throw new ArgumentException("There already exists an account with this email address");
+                }
+            }
+            catch (Exception ex)
+            {
+        
+                throw;
+            }
 
             string passwordHash = _passwordHasher.Hash(request.password);
+         
 
+      
             var newUser = new UserModel
             {
                 FirstName = request.FirstName,
@@ -50,12 +109,37 @@ namespace UsersService.Application
                 Country = request.Country,
                 phone_number = request.phone_number,
                 username = request.username,
+                email = request.email,
                 passwordHash = passwordHash,
                 Role = "User"
             };
-            await _repository.AddUserAsync(newUser);
 
-            var token = _jwtTokenService.GenerateToken(newUser.Id, newUser.Role);
+         
+            try
+            {
+                await _repository.AddUserAsync(newUser);
+                Console.WriteLine("User saved successfully.");
+            }
+            catch (Exception ex)
+            {
+               
+                throw;
+            }
+
+           
+            string token;
+            try
+            {
+               
+                token = _jwtTokenService.GenerateToken(newUser.Id, newUser.Role);
+                
+            }
+            catch (Exception ex)
+            {
+              
+                throw; 
+            }
+         
 
             return new AuthResponse
             {
@@ -65,9 +149,8 @@ namespace UsersService.Application
                 LastName = newUser.LastName,
                 username = newUser.username,
             };
-
-
         }
+
         public async Task<string> Login(string username, string password)
         {
             
@@ -79,8 +162,8 @@ namespace UsersService.Application
                 throw new InvalidCredentialsException();
             }
 
-     
-            var passwordValid = _passwordHasher.VerifyPassword(password, user.passwordHash);
+            var passwordValid = _passwordHasher.VerifyPassword(user.passwordHash, password);
+
             if (!passwordValid)
             {
                 throw new InvalidCredentialsException();

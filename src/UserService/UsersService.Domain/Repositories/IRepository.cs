@@ -15,6 +15,10 @@ namespace UsersService.Domain.Repositories
 
         Task<bool> UserAlreadyExistsAsync(string username);
         Task<bool> EmailAlreadyExistsAsync(string email);
-   
+        Task<UserModel> UpdateUserAsync(UserModel user);
+        Task<bool> DeleteUserAsync(string username);
+
+
+
     }
 }
