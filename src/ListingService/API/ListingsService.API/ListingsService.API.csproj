@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\UserService\UsersService.Application\UsersService.Application.csproj" />
+    <ProjectReference Include="..\..\ListingsService.Application\ListingsService.Application.csproj" />
     <ProjectReference Include="..\..\ListingsService.Domain\ListingsService.Domain.csproj" />
   </ItemGroup>
 

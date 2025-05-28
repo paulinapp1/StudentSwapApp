@@ -1,32 +1,22 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
+using System.Text;
+using UsersService.Application;
 using UsersService.Domain.Models;
 
-namespace UsersService.Application
+namespace User.Application.Services
 {
     public class JwtTokenService : IJwtTokenService
     {
         private readonly JwtSettings _settings;
-        private readonly RsaSecurityKey _rsaKey;
-        private readonly SigningCredentials _signingCredentials;
 
-        public JwtTokenService(Microsoft.Extensions.Options.IOptions<JwtSettings> settings)
+        public JwtTokenService(IOptions<JwtSettings> settings)
         {
             _settings = settings.Value;
-
-            // Load RSA private key from PEM file
-            var rsa = RSA.Create();
-            rsa.ImportFromPem(System.IO.File.ReadAllText("./data/private.key"));
-
-            _rsaKey = new RsaSecurityKey(rsa);
-
-            // Create signing credentials using RSA SHA256
-            _signingCredentials = new SigningCredentials(_rsaKey, SecurityAlgorithms.RsaSha256);
         }
 
         public string GenerateToken(int userId, string role)
@@ -37,15 +27,20 @@ namespace UsersService.Application
                 new Claim(ClaimTypes.Role, role)
             };
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Key));
+            var rsa = RSA.Create();
+            rsa.ImportFromPem(File.ReadAllText("./data/private.key")); 
+            var creds = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256);
+
             var token = new JwtSecurityToken(
                 issuer: _settings.Issuer,
                 audience: _settings.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(_settings.ExpiresInMinutes),
-                signingCredentials: _signingCredentials
-            );
+                signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

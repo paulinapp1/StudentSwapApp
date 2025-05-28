@@ -1,34 +1,30 @@
-﻿using ListingsService.Domain.Models;
+﻿using ListingsService.Application;
+using ListingsService.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace ListingsService.API.services
 {
-    public class AddListingService
+    public class AddListingService: IAddListingService
     {
         public Listing _listing;
         public HttpContext _httpContext;
-
-        public AddListingService( Listing listing, HttpContext httpContext)
+        protected IListingRepository _listingRepository;
+       
+        public AddListingService(Listing listing, HttpContext httpContext, IListingRepository listingRepository)
         {
             _listing = listing;
             _httpContext = httpContext;
+            _listingRepository = listingRepository;
         }
-
-        public int? GetUserIdFromToken(HttpContext httpContext)
+        public async Task<Listing> AddListingAsync(Listing listing)
         {
-            var token = httpContext.Request.Cookies["AuthToken"];
-            if(token == null)
-            {
-                return null;
-            }
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            return await _listingRepository.AddAsync(listing);
 
-            return userIdClaim != null ? int.Parse(userIdClaim.Value) : (int?)null;
         }
+
+        
 
     }
 }

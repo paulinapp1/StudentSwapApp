@@ -18,7 +18,8 @@ namespace ListingsService.Domain.Models
 
         public async Task<Listing> AddAsync(Listing listing)
         {
-            _dataContext.Add(listing);
+            
+            _dataContext.Listings.Add(listing);
             await _dataContext.SaveChangesAsync();
             return listing;
         }
@@ -44,5 +45,8 @@ namespace ListingsService.Domain.Models
         {
             return await _dataContext.Listings.ToListAsync();
         }
+
+      
+        }
     }
-}
+

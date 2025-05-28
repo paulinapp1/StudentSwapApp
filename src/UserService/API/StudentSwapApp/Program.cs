@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
 using System.Text;
+
 using UsersService.Application;
 using UsersService.Domain;
 using UsersService.Domain.Models;
@@ -51,7 +52,6 @@ builder.Services.AddSwaggerGen(c =>
         });
 });
 
-// JWT config
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 builder.Services.Configure<JwtSettings>(jwtSettings);
 
@@ -63,8 +63,9 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(options =>
 {
     var rsa = RSA.Create();
-    rsa.ImportFromPem(File.ReadAllText("./data/public.key")); 
-    var rsaKey = new RsaSecurityKey(rsa);
+    rsa.ImportFromPem(File.ReadAllText("./data/public.key"));
+    Console.WriteLine("Public key modulus: " + Convert.ToBase64String(rsa.ExportParameters(false).Modulus));
+    var publicKey = new RsaSecurityKey(rsa);
 
     var jwtConfig = jwtSettings.Get<JwtSettings>();
     options.TokenValidationParameters = new TokenValidationParameters
@@ -75,23 +76,24 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtConfig.Issuer,
         ValidAudience = jwtConfig.Audience,
-        IssuerSigningKey = rsaKey
+        IssuerSigningKey = publicKey
     };
 });
-builder.Services.AddAuthorization();
-builder.Services.AddScoped<IRepository, Repository>();
-builder.Services.AddScoped<ILoginService, LoginService>();
-builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
-builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
-builder.Services.AddHttpClient();
-builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
         policy.RequireRole("Administrator"));
 });
+builder.Services.AddScoped<IRepository, Repository>();
+builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
+builder.Services.AddSingleton<IJwtTokenService, User.Application.Services.JwtTokenService>();
+builder.Services.AddScoped<ImanageUserService, manageUserService>();
+builder.Services.AddHttpClient();
+builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpContextAccessor();
+
 
 
 

@@ -11,5 +11,6 @@ namespace UsersService.Application
     {
         Task<string> Login(string username, string password);
         Task<AuthResponse> SignUp(SignUpRequest request);
+        Task<AuthResponse> SignUpAdmin(SignUpRequest request);
     }
 }

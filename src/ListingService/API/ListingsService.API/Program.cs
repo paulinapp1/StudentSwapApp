@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ListingsService.Domain.Models;
+using ListingsService.Application;
+using ListingsService.API.services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddScoped<IListingRepository, ListingRepository>();
+builder.Services.AddScoped<IAddListingService, AddListingService>();
 
 
 var app = builder.Build();

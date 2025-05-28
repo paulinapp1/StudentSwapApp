@@ -57,6 +57,47 @@ namespace StudentSwapApp.API
                 });
             }
         }
+        [HttpPost("signUpAdmin")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> SignUpAdmin([FromBody] SignUpRequest signUpRequest)
+        {
+
+            try
+            {
+                var authResponse = await _loginService.SignUpAdmin(signUpRequest);
+
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "User registered successfully",
+                    Data = authResponse
+                });
+            }
+            catch (UserAlreadyExistsException ex)
+            {
+                return Conflict(new
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
+            }
+            catch (InvalidCredentialsException ex)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = ex.Message
+                });
+            }
+            catch
+            {
+                return StatusCode(500, new
+                {
+                    Success = false,
+                    Message = "An error occurred during registration"
+                });
+            }
+        }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -77,13 +118,7 @@ namespace StudentSwapApp.API
                 return Unauthorized();
             }
         }
-        [HttpGet("authorizeadmin")]
-        [Authorize]
-        [Authorize(Policy = "AdminOnly")]
-        public IActionResult AdminPage()
-        {
-            return Ok("Dane tylko dla administratora");
-        }
+        
 
     }
 }

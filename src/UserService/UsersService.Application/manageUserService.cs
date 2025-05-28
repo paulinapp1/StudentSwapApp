@@ -21,18 +21,31 @@ namespace UsersService.Application
         }
         public async Task ChangePasswordAsync(int Id, string currentPassword, string newPassword)
         {
+            Console.WriteLine($"ChangePasswordAsync started for user ID: {Id}");
+
             var user = await _repository.GetUserByIdAsync(Id);
             if (user == null)
+            {
+                Console.WriteLine("User not found in repository");
                 throw new Exception("User not found");
+            }
 
-     
+            Console.WriteLine($"User found: {user.username}");
+
             if (!_passwordHasher.VerifyPassword(user.passwordHash, currentPassword))
+            {
+                Console.WriteLine("Current password verification failed");
                 throw new Exception("Current password is incorrect");
+            }
 
             var newHashedPassword = _passwordHasher.Hash(newPassword);
             user.passwordHash = newHashedPassword;
 
+            Console.WriteLine("Password hashed and updated in user object");
+
             await _repository.UpdateUserAsync(user);
+
+            Console.WriteLine("User updated in repository");
         }
 
         public async Task UpdateAddressAsync(int Id, string city, string street, string phoneNumber)
