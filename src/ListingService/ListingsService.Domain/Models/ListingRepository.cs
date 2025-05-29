@@ -23,7 +23,18 @@ namespace ListingsService.Domain.Models
             await _dataContext.SaveChangesAsync();
             return listing;
         }
+        public async Task<Category> AddCategoryAsync(Category category)
+        {
 
+            _dataContext.Categories.Add(category);
+            await _dataContext.SaveChangesAsync();
+            return category;
+        }
+        public async Task<Category> GetByNameAsync(string categoryName)
+        {
+            return await _dataContext.Categories
+                                     .FirstOrDefaultAsync(c => c.CategoryName == categoryName);
+        }
         public Task<bool> DeleteAsync(int id)
         {
             throw new NotImplementedException();

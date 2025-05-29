@@ -4,18 +4,19 @@ using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace ListingsService.API.services
+namespace ListingsService.Application
 {
     public class AddListingService: IAddListingService
     {
-        public Listing _listing;
-        public HttpContext _httpContext;
+        
+        public IHttpContextAccessor _httpContextAccessor;
+
         protected IListingRepository _listingRepository;
        
-        public AddListingService(Listing listing, HttpContext httpContext, IListingRepository listingRepository)
+        public AddListingService(IHttpContextAccessor httpContextAccessor, IListingRepository listingRepository)
         {
-            _listing = listing;
-            _httpContext = httpContext;
+
+            _httpContextAccessor = httpContextAccessor;
             _listingRepository = listingRepository;
         }
         public async Task<Listing> AddListingAsync(Listing listing)

@@ -12,8 +12,10 @@ namespace ListingsService.Domain.Models
         Task<Listing> UpdateAsync(Listing listing);
         Task<bool> DeleteAsync(int id);
         Task<Listing> GetByIdAsync(int id);
-
+        Task<Category> AddCategoryAsync(Category category);
         Task<List<Listing>> GetAllAsync();
+        Task<Category> GetByNameAsync(string categoryName);
+
 
     }
 }

@@ -16,10 +16,33 @@ namespace ListingsService.Domain.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Listing>().
-                HasOne(l => l.Category).
-                WithMany(c => c.Listings).
-                HasForeignKey(l => l.CategoryId);
+            
+
+           
+            modelBuilder.Entity<Listing>(entity =>
+            {
+                entity.HasKey(e => e.ListingId);
+                entity.Property(e => e.ListingId).ValueGeneratedOnAdd(); 
+
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Description).HasMaxLength(1000);
+                entity.Property(e => e.ProductPrice).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.Condition).IsRequired();
+
+                entity.HasOne(e => e.Category)
+                      .WithMany(c => c.Listings)
+                      .HasForeignKey(e => e.CategoryId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+       
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasKey(e => e.CategoryId);
+                entity.Property(e => e.CategoryId).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.CategoryName).IsRequired().HasMaxLength(50);
+            });
 
         }
     }
