@@ -8,7 +8,7 @@ using UsersService.Domain.Repositories;
 
 namespace StudentSwapApp.API
 {
-    [Route("api/[controller]")]
+    [Route("users/[controller]")]
     public class UserController : Controller
     {
         private readonly IRepository _repository;

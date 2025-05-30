@@ -16,6 +16,8 @@ namespace ListingsService.Domain.Models
         Task<List<Listing>> GetAllAsync();
         Task<Category> GetByNameAsync(string categoryName);
 
+        Task<List<Category>> GetAllCategoriesAsync();
+
 
     }
 }

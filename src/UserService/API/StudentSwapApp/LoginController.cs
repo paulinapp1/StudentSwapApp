@@ -7,7 +7,7 @@ using UsersService.Application.Exceptions;
 
 namespace StudentSwapApp.API
 {
-    [Route("api/[controller]")]
+    [Route("users/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
     {

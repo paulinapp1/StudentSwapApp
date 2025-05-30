@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace ListingsService.Domain.Models
 
         public async Task<Listing> AddAsync(Listing listing)
         {
-            
+
             _dataContext.Listings.Add(listing);
             await _dataContext.SaveChangesAsync();
             return listing;
@@ -35,9 +36,16 @@ namespace ListingsService.Domain.Models
             return await _dataContext.Categories
                                      .FirstOrDefaultAsync(c => c.CategoryName == categoryName);
         }
-        public Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var listing = await _dataContext.Listings.FindAsync(id);
+            if (listing != null)
+            {
+                return false;
+            }
+            _dataContext.Listings.Remove(listing);
+            await _dataContext.SaveChangesAsync();
+            return true;
 
         }
 
@@ -57,7 +65,11 @@ namespace ListingsService.Domain.Models
             return await _dataContext.Listings.ToListAsync();
         }
 
-      
+        public async Task<List<Category>> GetAllCategoriesAsync()
+        {
+            return await _dataContext.Categories.ToListAsync();
+
         }
     }
+}
 
