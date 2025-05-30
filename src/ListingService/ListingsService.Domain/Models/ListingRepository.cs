@@ -1,0 +1,75 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ListingsService.Domain.Models
+{
+    public class ListingRepository : IListingRepository
+    {
+        private readonly DataContext _dataContext;
+
+        public ListingRepository(DataContext dataContext)
+        {
+            _dataContext = dataContext;
+        }
+
+        public async Task<Listing> AddAsync(Listing listing)
+        {
+
+            _dataContext.Listings.Add(listing);
+            await _dataContext.SaveChangesAsync();
+            return listing;
+        }
+        public async Task<Category> AddCategoryAsync(Category category)
+        {
+
+            _dataContext.Categories.Add(category);
+            await _dataContext.SaveChangesAsync();
+            return category;
+        }
+        public async Task<Category> GetByNameAsync(string categoryName)
+        {
+            return await _dataContext.Categories
+                                     .FirstOrDefaultAsync(c => c.CategoryName == categoryName);
+        }
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var listing = await _dataContext.Listings.FindAsync(id);
+            if (listing != null)
+            {
+                return false;
+            }
+            _dataContext.Listings.Remove(listing);
+            await _dataContext.SaveChangesAsync();
+            return true;
+
+        }
+
+        public async Task<Listing> GetByIdAsync(int id)
+        {
+            return await _dataContext.Listings.FindAsync(id);
+        }
+
+        public async Task<Listing> UpdateAsync(Listing listing)
+        {
+            _dataContext.Listings.Update(listing);
+            await _dataContext.SaveChangesAsync();
+            return listing;
+        }
+        public async Task<List<Listing>> GetAllAsync()
+        {
+            return await _dataContext.Listings.ToListAsync();
+        }
+
+        public async Task<List<Category>> GetAllCategoriesAsync()
+        {
+            return await _dataContext.Categories.ToListAsync();
+
+        }
+    }
+}
+

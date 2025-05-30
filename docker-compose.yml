@@ -1,0 +1,82 @@
+services:
+  # Listings Service
+  listingsservice.api:
+    build:
+      context: ./src/ListingService/API/ListingsService.API
+      dockerfile: Dockerfile
+    ports:
+      - "5002:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=Host=listingsdb;Port=5432;Database=${POSTGRES_DB_LISTINGS};Username=${POSTGRES_USER_LISTINGS};Password=${POSTGRES_PASSWORD_LISTINGS}
+      - Jwt__PublicKeyPath=/app/keys/public.key 
+    depends_on:
+      - listingsdb
+
+  listingsdb:
+    image: postgres:14-alpine
+    container_name: listingsdb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_LISTINGS}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_LISTINGS}
+      - POSTGRES_DB=${POSTGRES_DB_LISTINGS}
+    ports:
+      - "5432:5432" 
+    volumes:
+      - listings-data:/var/lib/postgresql/data
+
+  # Users Service
+  studentswapapp.api:
+    build:
+      context: ./src/UserService/API/StudentSwapApp
+      dockerfile: Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=Host=usersdb;Port=5432;Database=${POSTGRES_DB_USERS};Username=${POSTGRES_USER_USERS};Password=${POSTGRES_PASSWORD_USERS}
+      - Jwt__PrivateKeyPath=/app/keys/private.key
+      - Jwt__PublicKeyPath=/app/keys/public.key
+    depends_on:
+      - usersdb
+
+  usersdb:
+    image: postgres:14-alpine
+    container_name: usersdb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_USERS}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_USERS}
+      - POSTGRES_DB=${POSTGRES_DB_USERS}
+    ports:
+      - "5433:5432"  
+    volumes:
+      - users-data:/var/lib/postgresql/data
+ # Purchase Service
+  purchaseservice.api:
+    build:
+      context: ./src/PurchaseService/API/PurchaseService.API
+      dockerfile: Dockerfile
+    ports:
+      - "5003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=Host=purchasedb;Port=5432;Database=${POSTGRES_DB_PURCHASE};Username=${POSTGRES_USER_PURCHASE};Password=${POSTGRES_PASSWORD_PURCHASE}
+      - Jwt__PublicKeyPath=/app/keys/public.key
+    depends_on:
+      - purchasedb
+
+  purchasedb:
+    image: postgres:14-alpine
+    container_name: purchasedb
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_PURCHASE}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PURCHASE}
+      - POSTGRES_DB=${POSTGRES_DB_PURCHASE}
+    ports:
+      - "5434:5432" 
+
+  
+volumes:
+  listings-data:
+  users-data:
+  purchase-data:
