@@ -41,6 +41,49 @@ namespace ListingsService.API.Controllers
             return Ok(result);
           
         }
+        [Authorize(Roles = "Administrator")]
+        [HttpDelete("deleteCategory")]
+        public async Task<IActionResult> DeleteCategory(int CategoryID)
+        {
+            var deleted = await _listingRepository.DeleteCategoryAsync(CategoryID);
+            if (!deleted)
+            {
+                return NotFound("Listing with this ID does not exist");
+
+            }
+            return Ok(deleted);
+        }
+        [Authorize(Roles = "Administrator")]
+        [HttpPut("updateCategory")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateCategory([FromBody] Category category)
+        {
+            if (category == null || category.CategoryId == 0)
+            {
+                return BadRequest("Invalid category data.");
+            }
+
+            var existingCategory = await _listingRepository.GetCategoryByIdAsync(category.CategoryId);
+            if (existingCategory == null)
+            {
+                return NotFound($"Category with ID {category.CategoryId} not found.");
+            }
+
+     
+            existingCategory.CategoryName = category.CategoryName;
+        
+
+            try
+            {
+                var updatedCategory = await _listingRepository.UpdateCategoryAsync(existingCategory);
+                return Ok(updatedCategory);
+            }
+            catch (Exception ex)
+            {
+       
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the category.");
+            }
+        }
 
         [Authorize]
         [HttpPost("AddListing")]
@@ -89,7 +132,7 @@ namespace ListingsService.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("updateListingName")]
+        [HttpPatch("updateListingName")]
         public async Task<IActionResult> UpdateListingName(int id, [FromBody] UpdateNameRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
@@ -117,7 +160,7 @@ namespace ListingsService.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("updateListingDescription")]
+        [HttpPatch("updateListingDescription")]
         public async Task<IActionResult> UpdateListingDescription(int id, [FromBody] UpdateDescriptionRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Description))
@@ -145,7 +188,7 @@ namespace ListingsService.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("updateListingPrice")]
+        [HttpPatch("updateListingPrice")]
         public async Task<IActionResult> UpdateListingPrice(int id, [FromBody] UpdatePriceRequest request)
         {
             if (request.ProductPrice <= 0)

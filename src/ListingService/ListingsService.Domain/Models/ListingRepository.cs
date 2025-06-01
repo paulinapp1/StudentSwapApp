@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -53,6 +54,10 @@ namespace ListingsService.Domain.Models
         {
             return await _dataContext.Listings.FindAsync(id);
         }
+        public async Task<Category> GetCategoryByIdAsync(int id)
+        {
+            return await _dataContext.Categories.FindAsync(id);
+        }
 
         public async Task<Listing> UpdateAsync(Listing listing)
         {
@@ -69,6 +74,24 @@ namespace ListingsService.Domain.Models
         {
             return await _dataContext.Categories.ToListAsync();
 
+        }
+
+        public async Task<bool> DeleteCategoryAsync(int id)
+        {
+            var category = await _dataContext.Categories.FindAsync(id);
+            if (category == null) {
+                return false;
+            }
+            _dataContext.Remove(category);
+            await _dataContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<Category> UpdateCategoryAsync(Category category)
+        {
+            _dataContext.Categories.Update(category);
+            await _dataContext.SaveChangesAsync();
+            return category;
         }
     }
 }

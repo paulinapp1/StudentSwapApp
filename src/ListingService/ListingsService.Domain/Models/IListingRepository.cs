@@ -15,7 +15,9 @@ namespace ListingsService.Domain.Models
         Task<Category> AddCategoryAsync(Category category);
         Task<List<Listing>> GetAllAsync();
         Task<Category> GetByNameAsync(string categoryName);
-
+        Task<bool> DeleteCategoryAsync(int id);
+        Task<Category> UpdateCategoryAsync(Category category);
+        Task<Category> GetCategoryByIdAsync(int id);
         Task<List<Category>> GetAllCategoriesAsync();
 
 
