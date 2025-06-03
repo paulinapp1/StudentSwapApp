@@ -90,11 +90,8 @@ namespace ListingsService.API.Controllers
         public async Task<IActionResult> AddListing([FromBody] CreateListingRequest request)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-                return Unauthorized("User ID not found in token.");
-
-            if (!int.TryParse(userIdClaim.Value, out int userId))
-                return BadRequest("Invalid user ID in token.");
+            
+            int userId = int.Parse(userIdClaim.Value);
 
 
             var category = await _listingRepository.GetByNameAsync(request.CategoryName);

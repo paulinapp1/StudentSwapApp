@@ -10,12 +10,16 @@ namespace PurchaseService.Domain.Repositories
     public class PurchaseRepository : IPurchaseRepository
     {
         private readonly DataContext _dataContext;
-        public PurchaseRepository(DataContext dataContext) {
+        public PurchaseRepository(DataContext dataContext)
+        {
             _dataContext = dataContext;
         }
-        public Task<PurchaseModel> AddToCartAsync(int ListingId, int UserId)
+        public async Task<PurchaseModel> AddToCartAsync(PurchaseModel purchase)
         {
-            throw new NotImplementedException();
+            _dataContext.Add(purchase);
+            await _dataContext.SaveChangesAsync();
+            return purchase;
+
         }
 
         public Task<PurchaseModel> CheckOutCartAsync(int ListingId)
@@ -48,14 +52,22 @@ namespace PurchaseService.Domain.Repositories
             return await _dataContext.Purchases.FindAsync(id);
         }
 
-        public Task<PurchaseModel> RemoveFromCartAsync(int ListingId)
+        public  async Task<PurchaseModel> GetCartItemAsync(int userId, int listingId)
         {
-            throw new NotImplementedException();
+            return await _dataContext.Purchases.FirstOrDefaultAsync(p => p.BuyerId == userId && p.ListingId == listingId && p.status == Enums.Status.IN_CART);
         }
 
-        public Task<PurchaseModel> RemoveFromCartAsync(int ListingId, int UserId)
+     
+        public async Task<bool> RemoveFromCartAsync(int ListingId, int UserId)
         {
-            throw new NotImplementedException();
+            var item = await GetCartItemAsync(UserId, ListingId);
+            if(item==null)
+            {
+                return false;
+            }
+            _dataContext.Purchases.Remove(item);
+            await _dataContext.SaveChangesAsync();
+            return true;
         }
 
         public Task<PurchaseModel> UpdateCart(int ListingId)
@@ -63,4 +75,5 @@ namespace PurchaseService.Domain.Repositories
             throw new NotImplementedException();
         }
     }
+
 }

@@ -8,9 +8,9 @@ namespace PurchaseService.Domain.Enums
 {
     public enum Status
     {
-        CREATED,
-        IN_CART,
-        COMPLETED,
-        PAYMENT_PENDING,
+        CREATED=2,
+        IN_CART = 1,
+        COMPLETED=3,
+        PAYMENT_PENDING=4,
     }
 }

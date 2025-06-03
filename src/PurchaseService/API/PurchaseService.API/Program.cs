@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PurchaseService.Application;
 using PurchaseService.Domain;
 using PurchaseService.Domain.Repositories;
 using System.Security.Cryptography;
@@ -82,6 +83,7 @@ builder.Services.AddAuthorization(options =>
 });
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+builder.Services.AddScoped<ICartService, CartService>();
 var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();

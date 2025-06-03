@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PurchaseService.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,9 @@ namespace PurchaseService.Domain
                     entity.HasKey(e => e.PurchaseId);
                     entity.Property(e => e.PurchaseId).ValueGeneratedOnAdd();
                     entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
-                    entity.Property(e => e.status).HasDefaultValueSql("CREATED");
+                    entity.Property(e => e.status)
+      .HasDefaultValue(Status.CREATED)
+      .HasConversion<string>();
                     entity.Property(e => e.UpdatedAt).HasDefaultValueSql("NOW()");
                     entity.Property(e => e.BuyerId).IsRequired();
                     entity.Property(e => e.SellerId).IsRequired();
