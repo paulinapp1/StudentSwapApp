@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UsersService.Application.DTO;
 using UsersService.Application.Exceptions;
@@ -24,10 +25,32 @@ namespace UsersService.Application
             _repository = repository;
             _passwordHasher = passwordHasher;
         }
-        private bool IsValidEmail(string email)
+        public bool IsValidEmail(string email)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            return Regex.IsMatch(email, @"^[a-z0-9]+\@[a-z0-9]+\.[a-z0-9]+$");
         }
+        public void ValidatePassword(string password)
+        {
+            var errors = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                errors.Add("Password must be at least 8 characters long.");
+            if (!Regex.IsMatch(password, @"[A-Z]"))
+                errors.Add("Password must contain at least one uppercase letter.");
+            if (!Regex.IsMatch(password, @"[a-z]"))
+                errors.Add("Password must contain at least one lowercase letter.");
+            if (!Regex.IsMatch(password, @"\d"))
+                errors.Add("Password must contain at least one number.");
+            if (!Regex.IsMatch(password, @"[\W_]"))
+                errors.Add("Password must contain at least one special character.");
+
+            if (errors.Any())
+                throw new ArgumentException(string.Join(" ", errors));
+        }
+
         public async Task<AuthResponse> SignUp(SignUpRequest request)
         {
             
