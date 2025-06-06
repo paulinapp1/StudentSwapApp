@@ -84,6 +84,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IPurchaseService, CreatePurchaseService>();
 var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();

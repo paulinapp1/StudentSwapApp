@@ -227,5 +227,23 @@ namespace ListingsService.API.Controllers
             var result = await _listingRepository.GetAllCategoriesAsync();
             return Ok(result);
         }
+        [Authorize]
+        [HttpPatch("updateListingStatus")]
+        public async Task<IActionResult> UpdateListingStatus(int listingId, Status newStatus)
+        {
+            var updated = await _listingRepository.UpdateStatusAsync(listingId, newStatus);
+            if (!updated)
+            {
+                return NotFound("Listing not found or failed to update status.");
+            }
+            return Ok("Listing status updated successfully.");
+        }
+        [Authorize]
+        [HttpGet("checkStatus")]
+        public async Task<IActionResult> CheckStatus(int listingId)
+        {
+            var result = await _listingRepository.CheckListingStatus(listingId);
+            return Ok(result);
+        }
     }
 }

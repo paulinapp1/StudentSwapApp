@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ListingsService.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace ListingsService.Domain.Models
         public async Task<bool> DeleteAsync(int id)
         {
             var listing = await _dataContext.Listings.FindAsync(id);
-            if (listing != null)
+            if (listing == null)
             {
                 return false;
             }
@@ -92,6 +93,22 @@ namespace ListingsService.Domain.Models
             _dataContext.Categories.Update(category);
             await _dataContext.SaveChangesAsync();
             return category;
+        }
+        public async Task<bool> UpdateStatusAsync(int listingId, Status newStatus)
+        {
+            var listing = await _dataContext.Listings.FindAsync(listingId);
+            if (listing == null)
+                return false;
+
+            listing.status = newStatus;
+            _dataContext.Listings.Update(listing);
+            await _dataContext.SaveChangesAsync();
+            return true;
+        }
+        public async Task<Status> CheckListingStatus(int listingId)
+        {
+            var listing = await _dataContext.Listings.FindAsync(listingId);
+            return listing.status;
         }
     }
 }

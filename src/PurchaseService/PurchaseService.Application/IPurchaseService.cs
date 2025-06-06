@@ -8,12 +8,9 @@ using System.Threading.Tasks;
 
 namespace PurchaseService.Application
 {
-    public interface ICartService
+    public interface IPurchaseService
     {
-        Task<PurchaseModel> AddToCartAsync(int listingId, int userId);
-        Task<bool> RemoveFromCartAsync(int listingId, int userId);
-        Task<List<CartDetailsRequest>> GetCartItems(int userId);
-
+        Task<PurchaseModel> createPurchase( int listingId, int userId);
+        Task<PurchaseModel> CancelPurchase(int purchaseId);
     }
-
 }

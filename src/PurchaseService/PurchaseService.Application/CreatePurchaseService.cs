@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PurchaseService.Application.DTO;
 using PurchaseService.Domain;
-using PurchaseService.Domain.Enums;
 using PurchaseService.Domain.Repositories;
 using System;
 using System.Collections.Generic;
@@ -11,19 +10,48 @@ using System.Threading.Tasks;
 
 namespace PurchaseService.Application
 {
-    public class CartService : ICartService
+    public class CreatePurchaseService : IPurchaseService
     {
-        protected IPurchaseRepository _repository;
-        public CartService(IPurchaseRepository repository)
+        private readonly IPurchaseRepository _repository;
+        public CreatePurchaseService(IPurchaseRepository repository)
         {
             _repository = repository;
         }
+        public async Task<PurchaseModel> CancelPurchase(int purchaseId)
+        {
+            // Retrieve the purchase from the database
+            var purchase = await _repository.GetByIdAsync(purchaseId);
+            if (purchase == null)
+            {
+                throw new Exception($"Purchase with ID {purchaseId} not found.");
+            }
 
-        public async Task<PurchaseModel> AddToCartAsync(int listingId, int userId)
+            int listingId = purchase.ListingId;
+
+            // Update listing status
+            using var httpClient = new HttpClient();
+            var updateStatusUrl = $"http://listingsservice.api:8080/listings/Listing/updateListingStatus?listingId={listingId}&status=AVAILABLE";
+            var updateResponse = await httpClient.PutAsync(updateStatusUrl, null);
+
+            if (!updateResponse.IsSuccessStatusCode)
+            {
+                var error = await updateResponse.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to update listing status for ListingId: {listingId}");
+                // Optionally: throw an exception or return an error result
+            }
+
+           
+            purchase.status = Domain.Enums.Status.CANCELLED;
+            purchase.UpdatedAt = DateTime.UtcNow;
+
+            await _repository.CancelPurchase(purchaseId);
+
+            return purchase;
+        }
+
+        public async Task<PurchaseModel> createPurchase(int listingId, int userId)
         {
             using var httpClient = new HttpClient();
-
-          
             var listingResponse = await httpClient.GetAsync($"http://listingsservice.api:8080/listings/Listing/getById?id={listingId}");
             if (!listingResponse.IsSuccessStatusCode)
             {
@@ -36,7 +64,7 @@ namespace PurchaseService.Application
             if (listing == null)
                 throw new Exception("Listing data is null or invalid");
 
-   
+
             var userResponse = await httpClient.GetAsync($"http://studentswapapp.api:8080/users/User/getUserById?id={userId}");
             if (!userResponse.IsSuccessStatusCode)
             {
@@ -56,7 +84,7 @@ namespace PurchaseService.Application
                 BuyerId = userId,
                 SellerId = listing.UserId,
                 Price = listing.Price,
-                status = Domain.Enums.Status.IN_CART,
+                status = Domain.Enums.Status.CREATED,
                 BuyerNumber = int.TryParse(user.PhoneNumber, out var phone) ? phone : 0,
                 City = user.City,
                 Country = user.Country,
@@ -64,53 +92,20 @@ namespace PurchaseService.Application
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
+            var updateStatusUrl = $"http://listingsservice.api:8080/listings/Listing/updateListingStatus?listingId={listingId}&status=RESERVED";
+            var updateResponse = await httpClient.PutAsync(updateStatusUrl, null);
 
-      
-            return await _repository.AddToCartAsync(purchase);
-        }
-        public async Task<bool> RemoveFromCartAsync(int listingId, int userId)
-        {
-            var purchase = await _repository.GetCartItemAsync(userId, listingId);
-            if (purchase == null || purchase.status != Status.IN_CART) {
-                return false; 
-            }
-
-            return await _repository.RemoveFromCartAsync(listingId, userId);
-        }
-        public async Task<List<CartDetailsRequest>> GetCartItems(int userId)
-        {
-            var items = await _repository.GetCartItemsByUserId(userId);
-            var cartDetails = new List<CartDetailsRequest>();
-            using var httpClient = new HttpClient();
-
-            foreach (var item in items)
+            if (!updateResponse.IsSuccessStatusCode)
             {
-                var response = await httpClient.GetAsync($"http://listingsservice.api:8080/listings/Listing/getById?id={item.ListingId}");
-                if (response.IsSuccessStatusCode)
-                {
-                    var json= await response.Content.ReadAsStringAsync();
-                    var listing=JsonConvert.DeserializeObject<CartDetailsRequest>(json);
-                    if(listing != null)
-                    {
-                        cartDetails.Add(listing);
-                    }
-                }
-
+                var error = await updateResponse.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to update listing status for ListingId");
               
-                }
-            return cartDetails;
+
             }
-       
 
+            //dodac call do payment service
+            return await _repository.CreatePurchaseAsync(purchase);
 
-
-
-
-
-
-
-
-
+        }
     }
-
 }

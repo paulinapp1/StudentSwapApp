@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ListingsService.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,9 @@ namespace ListingsService.Domain.Models
         Task<Category> UpdateCategoryAsync(Category category);
         Task<Category> GetCategoryByIdAsync(int id);
         Task<List<Category>> GetAllCategoriesAsync();
+        Task<bool> UpdateStatusAsync(int listingId, Status newStatus);
+        Task<Status> CheckListingStatus(int listingId); 
+
 
 
     }

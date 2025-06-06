@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurchaseService.Domain.Enums
+namespace ListingsService.Domain.Enums
 {
     public enum Status
     {
-        CREATED=2,
-        IN_CART = 1,
-        COMPLETED=3,
-        PAYMENT_PENDING=4,
-        CANCELLED=5
+        ACTIVE =1,
+        RESERVED=2,
+        SOLD=3
     }
 }

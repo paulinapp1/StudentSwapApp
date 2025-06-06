@@ -22,26 +22,36 @@ namespace PurchaseService.Domain.Repositories
 
         }
 
-        public Task<PurchaseModel> CheckOutCartAsync(int ListingId)
+        public async Task<PurchaseModel> UpdatePurchaseAsync(PurchaseModel purchase)
         {
-            throw new NotImplementedException();
+            var existingPurchase = await _dataContext.Purchases.FindAsync(purchase.PurchaseId);
+            if (existingPurchase == null)
+            {
+                throw new Exception("Purchase not found");
+            }
+
+            existingPurchase.status = purchase.status;
+            existingPurchase.UpdatedAt = DateTime.UtcNow;
+
+           
+
+            _dataContext.Purchases.Update(existingPurchase);
+            await _dataContext.SaveChangesAsync();
+
+            return existingPurchase;
         }
 
-        public Task<PurchaseModel> CheckOutCartAsync(int ListingId, int UserId)
+
+
+
+        public async Task<PurchaseModel> CreatePurchaseAsync(PurchaseModel purchase)
         {
-            throw new NotImplementedException();
+            _dataContext.Add(purchase);
+            await _dataContext.SaveChangesAsync();
+            return purchase;
         }
 
-        public Task<PurchaseModel> CreatePurchaseAsync(PurchaseModel purchase)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<PurchaseModel> CreatePurchaseAsync(PurchaseModel purchase, int UserId, int ListingId)
-        {
-            throw new NotImplementedException();
-        }
-
+       
         public async Task<List<PurchaseModel>> GetAllAsync()
         {
             return await _dataContext.Purchases.ToListAsync();
@@ -56,8 +66,13 @@ namespace PurchaseService.Domain.Repositories
         {
             return await _dataContext.Purchases.FirstOrDefaultAsync(p => p.BuyerId == userId && p.ListingId == listingId && p.status == Enums.Status.IN_CART);
         }
+        public async Task<List<PurchaseModel>> GetCartItemsByUserId(int userId)
+        {
+            return await _dataContext.Purchases
+                .Where(p => p.BuyerId == userId && p.status == Enums.Status.IN_CART)
+                .ToListAsync(); 
+        }
 
-     
         public async Task<bool> RemoveFromCartAsync(int ListingId, int UserId)
         {
             var item = await GetCartItemAsync(UserId, ListingId);
@@ -70,9 +85,17 @@ namespace PurchaseService.Domain.Repositories
             return true;
         }
 
-        public Task<PurchaseModel> UpdateCart(int ListingId)
+        public async Task<bool> CancelPurchase(int purchaseId)
         {
-            throw new NotImplementedException();
+            var purchase = await _dataContext.Purchases.FindAsync(purchaseId);
+            if (purchase == null)
+            {
+                return false; 
+            }
+
+            _dataContext.Purchases.Remove(purchase);
+            await _dataContext.SaveChangesAsync();
+            return true;
         }
     }
 

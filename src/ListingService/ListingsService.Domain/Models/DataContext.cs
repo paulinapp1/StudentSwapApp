@@ -28,11 +28,13 @@ namespace ListingsService.Domain.Models
                 entity.Property(e => e.Description).HasMaxLength(1000);
                 entity.Property(e => e.ProductPrice).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.Condition).IsRequired();
+                entity.Property(e => e.status).HasDefaultValue(Enums.Status.ACTIVE);
 
                 entity.HasOne(e => e.Category)
                       .WithMany(c => c.Listings)
                       .HasForeignKey(e => e.CategoryId)
                       .OnDelete(DeleteBehavior.Cascade);
+                
             });
 
        

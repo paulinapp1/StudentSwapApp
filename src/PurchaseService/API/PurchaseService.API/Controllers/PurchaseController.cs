@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PurchaseService.Application;
 using PurchaseService.Domain.Repositories;
+using System.Security.Claims;
 
 namespace PurchaseService.API.Controllers
 {
@@ -8,10 +11,19 @@ namespace PurchaseService.API.Controllers
     public class PurchaseController : ControllerBase
     {
         private readonly IPurchaseRepository _repository;
+        private readonly IPurchaseService _purchaseService;
        
-        public PurchaseController(IPurchaseRepository repository)
+        public PurchaseController(IPurchaseRepository repository, IPurchaseService purchaseService)
         {
             _repository = repository;
+            _purchaseService = purchaseService;
+        }
+  
+        [HttpDelete("cancelPurchase")]
+        public async Task<IActionResult> CancelPurchase([FromQuery] int purchaseId)
+        {
+            var result =  await _purchaseService.CancelPurchase(purchaseId);
+            return Ok(result);
         }
         [HttpGet("getAllPurchases")]
         public async Task<IActionResult> GetAllPurchases()
@@ -19,12 +31,23 @@ namespace PurchaseService.API.Controllers
             var result = await _repository.GetAllAsync();
             return Ok(result);
         }
-
+        [Authorize]
         [HttpGet("getPurchaseById")]
         public async Task<IActionResult> GetPurchaseById(int PurchaseId)
         {
             var result= await _repository.GetByIdAsync(PurchaseId);
             return Ok(result);
         }
+        [Authorize]
+        [HttpPost("createPurchase")]
+        public async Task<IActionResult> CreatePurchase([FromBody] int ListingId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            int userId = int.Parse(userIdClaim.Value);
+            var result = await _purchaseService.createPurchase(ListingId, userId);
+            return Ok(result);
+
+        }
+
     }
 }

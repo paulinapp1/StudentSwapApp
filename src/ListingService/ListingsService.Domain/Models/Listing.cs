@@ -16,6 +16,7 @@ namespace ListingsService.Domain.Models
         public decimal ProductPrice { get; set; }
         public Condition Condition { get; set; }
         public int UserId { get; set; }
+        public Status status { get; set; }
 
         public Category Category { get; set; }
 

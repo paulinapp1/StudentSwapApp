@@ -19,7 +19,7 @@ namespace PurchaseService.API.Controllers
         }
         [Authorize]
         [HttpPost("addToCart")]
-        public async Task<IActionResult> AddToCart([FromBody]int listingId)
+        public async Task<IActionResult> AddToCart([FromQuery]int listingId)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
          
@@ -42,6 +42,23 @@ namespace PurchaseService.API.Controllers
             }
             return Ok(result);
         }
+        [Authorize]
+        [HttpGet("getCartItems")]
+        public async Task<IActionResult> GetCartItems()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            int userId = int.Parse(userIdClaim.Value);
+            var result = await _cartService.GetCartItems(userId);
+            if (result.Count==0)
+            {
+                return NotFound("No items in cart");
+            }
+            return Ok(result);
+        }
+
+      
+
+
     }
 }
 

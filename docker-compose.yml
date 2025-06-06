@@ -74,6 +74,8 @@ services:
       - POSTGRES_DB=${POSTGRES_DB_PURCHASE}
     ports:
       - "5434:5432" 
+    volumes:
+     - purchase-data:/var/lib/postgrsql/data
 
   
 volumes:
