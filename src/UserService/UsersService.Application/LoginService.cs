@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UsersService.Application.DTO;
 using UsersService.Application.Exceptions;
+using UsersService.Application.Producer;
 using UsersService.Domain.Models;
 using UsersService.Domain.Repositories;
 
@@ -18,12 +19,16 @@ namespace UsersService.Application
         protected IJwtTokenService _jwtTokenService;
         protected IRepository _repository;
         protected IPasswordHasher _passwordHasher;
+        protected IKafkaProducer _kafkaProducer;
+        protected Queue<int> _userLoggedIdsQueue;
 
-        public LoginService( IJwtTokenService jwtTokenService, IRepository repository, IPasswordHasher passwordHasher)
+        public LoginService( IJwtTokenService jwtTokenService, IRepository repository, IPasswordHasher passwordHasher, IKafkaProducer kafkaProducer )
         {
             _jwtTokenService = jwtTokenService;
             _repository = repository;
             _passwordHasher = passwordHasher;
+            _kafkaProducer = kafkaProducer;
+            _userLoggedIdsQueue = new Queue<int>();
         }
         public bool IsValidEmail(string email)
         {
@@ -317,7 +322,8 @@ namespace UsersService.Application
             string role = user.Role;
 
             var token = _jwtTokenService.GenerateToken(user.Id, role);
-            
+            _userLoggedIdsQueue.Enqueue(user.Id);
+            _kafkaProducer.SendMessageAsync("after-login-email-topic", "paulina2@test.com");
             return token;
         }
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PurchaseService.Application;
 using PurchaseService.Domain;
+using PurchaseService.Domain.Repositories;
 using System.Security.Claims;
 
 namespace PurchaseService.API.Controllers
@@ -12,10 +13,12 @@ namespace PurchaseService.API.Controllers
     public class CartController : ControllerBase
     {
         private readonly ICartService _cartService;
+        private readonly IPurchaseRepository _repository;
 
-        public CartController(ICartService cartService)
+        public CartController(ICartService cartService, IPurchaseRepository repository)
         {
             _cartService = cartService;
+            _repository = repository;
         }
         [Authorize]
         [HttpPost("addToCart")]
@@ -25,6 +28,10 @@ namespace PurchaseService.API.Controllers
          
 
             int userId = int.Parse(userIdClaim.Value);
+            bool alreadyInCart = await _repository.IsItemInCartAsync(listingId, userId);
+            if (alreadyInCart)
+                return Conflict("Item is already in your cart.");
+
             var result = await _cartService.AddToCartAsync(listingId, userId);
             return Ok(result);
         }
@@ -56,8 +63,13 @@ namespace PurchaseService.API.Controllers
             return Ok(result);
         }
 
-      
 
+        [HttpDelete("removeListingFromCarts")]
+        public async Task<IActionResult> RemoveListingFromCarts([FromQuery] int listingId)
+        {
+            await _repository.RemoveListingFromAllCartsAsync(listingId);
+            return Ok();
+        }
 
     }
 }

@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 using UsersService.Application;
+using UsersService.Application.Producer;
 using UsersService.Domain;
 using UsersService.Domain.Models;
 using UsersService.Domain.Repositories;
@@ -92,6 +93,7 @@ builder.Services.AddSingleton<IJwtTokenService, User.Application.Services.JwtTok
 builder.Services.AddScoped<ImanageUserService, manageUserService>();
 builder.Services.AddHttpClient();
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IKafkaProducer, KafkaProducer>();
 builder.Services.AddHttpContextAccessor();
 
 

@@ -16,7 +16,8 @@ namespace PurchaseService.Domain.Repositories
         Task<bool> RemoveFromCartAsync(int ListingId, int UserId);
         Task<PurchaseModel> GetCartItemAsync(int userId, int listingId);
         Task<List<PurchaseModel>> GetCartItemsByUserId(int userId);
-
+        Task<bool> IsItemInCartAsync(int listingId, int userId);
+        Task RemoveListingFromAllCartsAsync(int listingId);
 
     }
 

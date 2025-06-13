@@ -2,6 +2,6 @@
 {
     public class UpdateDescriptionRequest
     {
-        public string Description { get; set; } = string.Empty;
+        public required string Description { get; set; } = string.Empty;
     }
 }

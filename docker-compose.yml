@@ -24,31 +24,7 @@ services:
       - "5432:5432" 
     volumes:
       - listings-data:/var/lib/postgresql/data
- #Cart Service
-  cartservice.api:
-   build:
-    context: ./src/CartService/API/CartService.API
-    dockerfile: Dockerfile
-   ports:
-      - "5004:8080"
-   environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - ConnectionStrings__DefaultConnection=Host=cartdb;Port=5432;Database=${POSTGRES_DB_CART};Username=${POSTGRES_USER_CART};Password=${POSTGRES_PASSWORD_CART}
-      - Jwt__PublicKeyPath=/app/keys/public.key 
-   depends_on:
-       - cartdb
-#Cart db
-  cartdb:
-    image: postgres:14-alpine
-    container_name: cartdb
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER_CART}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_CART}
-      - POSTGRES_DB=${POSTGRES_DB_CART} 
-    ports:
-      - "5435:5432"
-    volumes:
-       - cart-data:/var/lib/postgresql/data
+ 
 
   # Users Service
   studentswapapp.api:
@@ -110,7 +86,18 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - Jwt__PublicKeyPath=/app/keys/public.key 
-  
+    #Notification Service
+  notificationservice:
+     build:
+         context: ./src/NotificationService/API/NotificationsService
+         dockerfile: Dockerfile
+     ports:
+       - "5006:8080"
+     depends_on:
+       - kafka
+     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
   kafka:
     image: apache/kafka:latest
     container_name: kafka
@@ -120,7 +107,7 @@ services:
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://kafka:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
@@ -129,7 +116,8 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_NUM_PARTITIONS: 3  
+      KAFKA_NUM_PARTITIONS: 3
+
   
 volumes:
   listings-data:

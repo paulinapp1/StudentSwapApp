@@ -2,6 +2,6 @@
 {
     public class UpdatePriceRequest
     {
-        public decimal ProductPrice { get; set; }
+        public required decimal ProductPrice { get; set; }
     }
 }

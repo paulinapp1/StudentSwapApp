@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PurchaseService.Application.DTO;
 using PurchaseService.Domain;
 using PurchaseService.Domain.Enums;
@@ -19,6 +20,7 @@ namespace PurchaseService.Application
             _repository = repository;
         }
 
+       
         public async Task<PurchaseModel> AddToCartAsync(int listingId, int userId)
         {
             using var httpClient = new HttpClient();
@@ -27,7 +29,7 @@ namespace PurchaseService.Application
             var listingResponse = await httpClient.GetAsync($"http://listingsservice.api:8080/listings/Listing/getById?id={listingId}");
             if (!listingResponse.IsSuccessStatusCode)
             {
-                var error = await listingResponse.Content.ReadAsStringAsync();
+                
                 throw new Exception($"Failed to retrieve listing ");
             }
 

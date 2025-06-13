@@ -78,7 +78,7 @@ namespace ListingsService.API.Controllers
                 var updatedCategory = await _listingRepository.UpdateCategoryAsync(existingCategory);
                 return Ok(updatedCategory);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
        
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while updating the category.");
@@ -90,7 +90,10 @@ namespace ListingsService.API.Controllers
         public async Task<IActionResult> AddListing([FromBody] CreateListingRequest request)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            
+            if(userIdClaim == null)
+            {
+                throw new ArgumentException("Not authorized");
+            }
             int userId = int.Parse(userIdClaim.Value);
 
 
@@ -117,16 +120,25 @@ namespace ListingsService.API.Controllers
         }
         [Authorize]
         [HttpDelete("deleteListing")]
-        public async Task<IActionResult> DeleteListing(int ListingID)
+        public async Task<IActionResult> DeleteListing(int listingId)
         {
-            var deleted = await _listingRepository.DeleteAsync(ListingID);
-            if (!deleted)
-            {
-                return NotFound("Listing with this ID does not exist");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            var roleClaim = User.FindFirst(ClaimTypes.Role);
 
-            }
-            return Ok(deleted);
+            if (userIdClaim == null)
+                return Unauthorized("User not authenticated.");
+
+            int userId = int.Parse(userIdClaim.Value);
+            string role = roleClaim?.Value ?? "";
+
+            var success = await _addListingService.DeleteListingAsync(listingId, userId, role);
+
+            if (!success)
+                return BadRequest("Could not delete listing. Either it does not exist or you're not authorized.");
+
+            return Ok("Listing deleted and removed from carts.");
         }
+
 
         [Authorize]
         [HttpPatch("updateListingName")]

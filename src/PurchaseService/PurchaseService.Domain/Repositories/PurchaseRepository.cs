@@ -97,6 +97,18 @@ namespace PurchaseService.Domain.Repositories
             await _dataContext.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> IsItemInCartAsync(int listingId, int userId)
+        {
+            return await _dataContext.Purchases
+                .AnyAsync(ci => ci.ListingId == listingId && ci.BuyerId == userId);
+        }
+        public async Task RemoveListingFromAllCartsAsync(int listingId)
+        {
+            var items = _dataContext.Purchases.Where(ci => ci.ListingId == listingId);
+            _dataContext.Purchases.RemoveRange(items);
+            await _dataContext.SaveChangesAsync();
+        }
+
     }
 
 }

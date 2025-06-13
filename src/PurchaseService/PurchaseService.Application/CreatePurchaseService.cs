@@ -55,7 +55,7 @@ namespace PurchaseService.Application
             var listingResponse = await httpClient.GetAsync($"http://listingsservice.api:8080/listings/Listing/getById?id={listingId}");
             if (!listingResponse.IsSuccessStatusCode)
             {
-                var error = await listingResponse.Content.ReadAsStringAsync();
+               
                 throw new Exception($"Failed to retrieve listing ");
             }
 
@@ -68,7 +68,7 @@ namespace PurchaseService.Application
             var userResponse = await httpClient.GetAsync($"http://studentswapapp.api:8080/users/User/getUserById?id={userId}");
             if (!userResponse.IsSuccessStatusCode)
             {
-                var error = await userResponse.Content.ReadAsStringAsync();
+               
                 throw new Exception($"Failed to retrieve user");
             }
 
@@ -97,7 +97,7 @@ namespace PurchaseService.Application
 
             if (!updateResponse.IsSuccessStatusCode)
             {
-                var error = await updateResponse.Content.ReadAsStringAsync();
+                
                 Console.WriteLine($"Failed to update listing status for ListingId");
               
 

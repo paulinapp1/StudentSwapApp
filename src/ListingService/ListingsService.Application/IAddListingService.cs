@@ -10,5 +10,6 @@ namespace ListingsService.Application
     public interface IAddListingService
     {
          Task<Listing> AddListingAsync(Listing listing);
+        Task<bool> DeleteListingAsync(int listingId, int userId, string role);
     }
 }

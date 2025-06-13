@@ -9,7 +9,7 @@ namespace ListingsService.Domain.Models
 {
     public class Category
     {
-        public int CategoryId { get; set; }
+        public required int CategoryId { get; set; }
         public string CategoryName { get; set; }
 
         [JsonIgnore]
