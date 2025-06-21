@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PurchaseService.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace PurchaseService.Domain.Repositories
 
            
 
-            _dataContext.Purchases.Update(existingPurchase);
+         
             await _dataContext.SaveChangesAsync();
 
             return existingPurchase;
@@ -84,6 +85,19 @@ namespace PurchaseService.Domain.Repositories
             await _dataContext.SaveChangesAsync();
             return true;
         }
+        public async Task RemoveListingFromAllCartsAsync(int listingId)
+        {
+            var cartItems = await _dataContext.Purchases
+                .Where(p => p.ListingId == listingId && p.status == Status.IN_CART)
+                .ToListAsync();
+
+            if (cartItems.Any())
+            {
+                _dataContext.Purchases.RemoveRange(cartItems);
+                await _dataContext.SaveChangesAsync();
+            }
+        }
+
 
         public async Task<bool> CancelPurchase(int purchaseId)
         {
@@ -102,12 +116,7 @@ namespace PurchaseService.Domain.Repositories
             return await _dataContext.Purchases
                 .AnyAsync(ci => ci.ListingId == listingId && ci.BuyerId == userId);
         }
-        public async Task RemoveListingFromAllCartsAsync(int listingId)
-        {
-            var items = _dataContext.Purchases.Where(ci => ci.ListingId == listingId);
-            _dataContext.Purchases.RemoveRange(items);
-            await _dataContext.SaveChangesAsync();
-        }
+    
 
     }
 

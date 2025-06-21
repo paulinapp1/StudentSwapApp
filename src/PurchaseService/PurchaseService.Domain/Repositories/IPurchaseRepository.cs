@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PurchaseService.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,12 @@ namespace PurchaseService.Domain.Repositories
         Task<List<PurchaseModel>> GetCartItemsByUserId(int userId);
         Task<bool> IsItemInCartAsync(int listingId, int userId);
         Task RemoveListingFromAllCartsAsync(int listingId);
+        Task<PurchaseModel> UpdatePurchaseAsync(PurchaseModel purchase);
+   
+
+
+
+
 
     }
 

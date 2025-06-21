@@ -55,7 +55,7 @@ namespace ListingsService.API.Controllers
         }
         [Authorize(Roles = "Administrator")]
         [HttpPut("updateCategory")]
-        [HttpPut]
+     
         public async Task<IActionResult> UpdateCategory([FromBody] Category category)
         {
             if (category == null || category.CategoryId == 0)
