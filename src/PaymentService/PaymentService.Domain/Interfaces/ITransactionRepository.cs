@@ -8,8 +8,7 @@ namespace PaymentService.Domain.Interfaces
 {
     public interface ITransactionRepository
     {
-        Task AddAsync(PaymentTransaction transaction);
-        Task<PaymentTransaction> GetByIdAsync(Guid id);
+        Task<PaymentTransaction> AddAsync(PaymentTransaction transaction);
     }
 }
 

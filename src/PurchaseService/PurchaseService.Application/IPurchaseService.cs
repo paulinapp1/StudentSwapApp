@@ -10,7 +10,7 @@ namespace PurchaseService.Application
 {
     public interface IPurchaseService
     {
-        Task<PurchaseModel> createPurchase( int listingId, int userId);
+        Task<PurchaseModel> CreatePurchase(int listingId, int userId, CreatePurchaseRequest paymentRequest);
         Task<PurchaseModel> CancelPurchase(int purchaseId);
     }
 }

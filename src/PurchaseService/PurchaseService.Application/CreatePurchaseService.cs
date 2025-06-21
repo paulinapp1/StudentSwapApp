@@ -13,13 +13,15 @@ namespace PurchaseService.Application
     public class CreatePurchaseService : IPurchaseService
     {
         private readonly IPurchaseRepository _repository;
-        public CreatePurchaseService(IPurchaseRepository repository)
+        private readonly ICartService _cartService;
+        public CreatePurchaseService(IPurchaseRepository repository, ICartService cartService)
         {
             _repository = repository;
+            _cartService = cartService;
         }
         public async Task<PurchaseModel> CancelPurchase(int purchaseId)
         {
-            // Retrieve the purchase from the database
+          
             var purchase = await _repository.GetByIdAsync(purchaseId);
             if (purchase == null)
             {
@@ -28,16 +30,16 @@ namespace PurchaseService.Application
 
             int listingId = purchase.ListingId;
 
-            // Update listing status
+           
             using var httpClient = new HttpClient();
-            var updateStatusUrl = $"http://listingsservice.api:8080/listings/Listing/updateListingStatus?listingId={listingId}&status=AVAILABLE";
+            var updateStatusUrl = $"http://listingsservice.api:8080/listings/Listing/updateListingStatus?listingId={listingId}&newStatus=1";
             var updateResponse = await httpClient.PutAsync(updateStatusUrl, null);
 
             if (!updateResponse.IsSuccessStatusCode)
             {
                 var error = await updateResponse.Content.ReadAsStringAsync();
                 Console.WriteLine($"Failed to update listing status for ListingId: {listingId}");
-                // Optionally: throw an exception or return an error result
+           
             }
 
            
@@ -49,7 +51,7 @@ namespace PurchaseService.Application
             return purchase;
         }
 
-        public async Task<PurchaseModel> createPurchase(int listingId, int userId)
+        public async Task<PurchaseModel> CreatePurchase(int listingId, int userId, CreatePurchaseRequest paymentRequest)
         {
             using var httpClient = new HttpClient();
             var listingResponse = await httpClient.GetAsync($"http://listingsservice.api:8080/listings/Listing/getById?id={listingId}");
@@ -92,19 +94,69 @@ namespace PurchaseService.Application
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            var updateStatusUrl = $"http://listingsservice.api:8080/listings/Listing/updateListingStatus?listingId={listingId}&status=RESERVED";
-            var updateResponse = await httpClient.PutAsync(updateStatusUrl, null);
-
-            if (!updateResponse.IsSuccessStatusCode)
+           
+         
+            var createdPurchase =  await _repository.CreatePurchaseAsync(purchase);
+            var paymentData = new PaymentRequest
             {
-                
-                Console.WriteLine($"Failed to update listing status for ListingId");
-              
+                PurchaseId = createdPurchase.PurchaseId,
+                UserId = createdPurchase.BuyerId,
+                Amount = listing.Price,
+                ListingId = listingId,
+                CardNumber = paymentRequest.CardNumber,
+                CardExpiry = paymentRequest.CardExpiry,
+                CardCvv = paymentRequest.CardCvv
 
+            };
+            var paymentJson = JsonConvert.SerializeObject(paymentData);
+            var paymentContent = new StringContent(paymentJson, Encoding.UTF8, "application/json");
+            try
+            {
+                var paymentResponse = await httpClient.PostAsync("http://paymentservice.api:8080/api/Payments", paymentContent);
+                if (paymentResponse.IsSuccessStatusCode)
+                {    
+                    var paymentResultJson = await paymentResponse.Content.ReadAsStringAsync();
+                    var paymentResult = JsonConvert.DeserializeObject<PaymentResult>(paymentResultJson);
+                    if (paymentResult?.Success == true)
+                    {
+                        var updatePaymentStatusUrl = $"http://listingsservice.api:8080/listings/Listing/updateListingStatus?listingId={listingId}&newStatus=3";
+                        var updatePaymentResponse = await httpClient.PatchAsync(updatePaymentStatusUrl, null);
+                        if (!updatePaymentResponse.IsSuccessStatusCode)
+                        {
+                            Console.WriteLine($"Failed to update listing status for ListingId: {listingId}");
+                        }
+                        
+                        createdPurchase.status = Domain.Enums.Status.COMPLETED;
+                        createdPurchase.UpdatedAt = DateTime.UtcNow;
+                        await _repository.UpdatePurchaseAsync(createdPurchase);
+
+                        return createdPurchase;
+                    }
+                    else
+                    {
+                        createdPurchase.status = Domain.Enums.Status.PAYMENT_PENDING;
+                        await _repository.UpdatePurchaseAsync(createdPurchase);
+                        throw new Exception($"Payment failed");
+                    }
+                }
+                else
+                {
+                    createdPurchase.status = Domain.Enums.Status.PAYMENT_PENDING;
+                    await _repository.UpdatePurchaseAsync(createdPurchase);
+                    var errorContent = await paymentResponse.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Payment service call failed. Status: {paymentResponse.StatusCode}, Body: {errorContent}");
+
+                    createdPurchase.status = Domain.Enums.Status.PAYMENT_PENDING;
+                    await _repository.UpdatePurchaseAsync(createdPurchase);
+                    throw new Exception($"Payment service call failed: {paymentResponse.StatusCode}");
+                }
             }
-
-            //dodac call do payment service
-            return await _repository.CreatePurchaseAsync(purchase);
+            catch (Exception ex)
+            {
+                createdPurchase.status = Domain.Enums.Status.PAYMENT_PENDING;
+                await _repository.UpdatePurchaseAsync(createdPurchase);
+                throw new Exception($"Payment processing error: {ex.Message}");
+            }
 
         }
     }

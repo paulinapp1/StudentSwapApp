@@ -8,27 +8,22 @@ using PaymentService.Domain.Interfaces;
 
 namespace PaymentService.Domain
 {
-    public class InMemoryTransactionRepository : ITransactionRepository
+    public class TransactionRepository : ITransactionRepository
     {
-        private static readonly ConcurrentDictionary<Guid, PaymentTransaction> _transactions
-            = new ConcurrentDictionary<Guid, PaymentTransaction>();
-
-        public Task AddAsync(PaymentTransaction transaction)
+        private readonly DataContext _dataContext;
+        public TransactionRepository(DataContext dataContext)
         {
-            _transactions[transaction.Id] = transaction;
-            return Task.CompletedTask;
+            _dataContext = dataContext;
         }
-
-        public Task<PaymentTransaction> GetByIdAsync(Guid id)
+        public async Task<PaymentTransaction> AddAsync(PaymentTransaction transaction)
         {
-            _transactions.TryGetValue(id, out var transaction);
-            return Task.FromResult(transaction);
+            await _dataContext.AddAsync(transaction);
+            await _dataContext.SaveChangesAsync();
+            return transaction;
         }
+    
 
-        public Task<IEnumerable<PaymentTransaction>> GetAllAsync()
-        {
-            return Task.FromResult<IEnumerable<PaymentTransaction>>(_transactions.Values);
-        }
+      
     }
 }
 

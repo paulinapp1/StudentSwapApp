@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PurchaseService.Application;
+using PurchaseService.Application.DTO;
 using PurchaseService.Domain.Repositories;
 using System.Security.Claims;
 
@@ -40,11 +41,17 @@ namespace PurchaseService.API.Controllers
         }
         [Authorize]
         [HttpPost("createPurchase")]
-        public async Task<IActionResult> CreatePurchase([FromBody] int ListingId)
+        public async Task<IActionResult> CreatePurchase([FromBody] CreatePurchaseRequest request)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             int userId = int.Parse(userIdClaim.Value);
-            var result = await _purchaseService.createPurchase(ListingId, userId);
+            var paymentRequest = new CreatePurchaseRequest
+            {
+                CardNumber = request.CardNumber,
+                CardExpiry = request.CardExpiry,
+                CardCvv = request.CardCvv
+            };
+            var result = await _purchaseService.CreatePurchase(request.ListingId, userId, paymentRequest);
             return Ok(result);
 
         }

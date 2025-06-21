@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace PaymentService.Domain.Enums;
 public enum CreditCardProvider
 {
-    AmericanExpress,
-    Mastercard,
-    Visa
+    AmericanExpress =1 ,
+    Mastercard=2,
+    Visa=3
 }
 

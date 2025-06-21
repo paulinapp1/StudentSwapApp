@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PaymentService.Application
+namespace PurchaseService.Application.DTO
 {
     public class PaymentRequest
     {
@@ -17,4 +17,3 @@ namespace PaymentService.Application
         public int ListingId { get; set; }
     }
 }
-

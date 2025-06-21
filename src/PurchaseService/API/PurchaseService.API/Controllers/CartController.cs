@@ -35,7 +35,7 @@ namespace PurchaseService.API.Controllers
             var result = await _cartService.AddToCartAsync(listingId, userId);
             return Ok(result);
         }
-        [Authorize]
+     
         [HttpDelete("removeFromCart")]
         public async Task<IActionResult> RemoveFromCart([FromQuery]int  listingId)
         {

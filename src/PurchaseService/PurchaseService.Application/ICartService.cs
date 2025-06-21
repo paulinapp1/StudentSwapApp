@@ -14,6 +14,7 @@ namespace PurchaseService.Application
         Task<bool> RemoveFromCartAsync(int listingId, int userId);
         Task<List<CartDetailsRequest>> GetCartItems(int userId);
 
+
     }
 
 }

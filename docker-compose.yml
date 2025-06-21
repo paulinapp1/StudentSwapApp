@@ -77,6 +77,7 @@ services:
       - "5434:5432" 
     volumes:
      - purchase-data:/var/lib/postgrsql/data
+#Payment Service
   paymentservice.api:
     build:
       context: ./src/PaymentService/API/PaymentService.API
@@ -86,6 +87,21 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - Jwt__PublicKeyPath=/app/keys/public.key 
+    depends_on:
+        - paymentdb
+
+  paymentdb:
+      image: postgres:14-alpine
+      container_name: paymentdb
+      environment:
+        - POSTGRES_USER=${POSTGRES_USER_PAYMENT}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PAYMENT}
+        - POSTGRES_DB=${POSTGRES_DB_PAYMENT}
+      ports:
+        - "5435:5432"
+      volumes:
+        - payment-data:/var/lib/postgresql/data
+    
     #Notification Service
   notificationservice:
      build:
@@ -124,4 +140,5 @@ volumes:
   users-data:
   purchase-data:
   cart-data:  
+  payment-data:
   

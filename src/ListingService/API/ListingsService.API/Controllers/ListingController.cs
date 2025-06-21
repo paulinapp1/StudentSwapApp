@@ -110,7 +110,8 @@ namespace ListingsService.API.Controllers
                 ProductPrice = request.ProductPrice,
                 Condition = request.Condition,
                 UserId = userId,
-                CategoryId = category.CategoryId
+                CategoryId = category.CategoryId,
+                status = Status.ACTIVE
 
 
             };
@@ -138,6 +139,7 @@ namespace ListingsService.API.Controllers
 
             return Ok("Listing deleted and removed from carts.");
         }
+        
 
 
         [Authorize]
@@ -239,17 +241,39 @@ namespace ListingsService.API.Controllers
             var result = await _listingRepository.GetAllCategoriesAsync();
             return Ok(result);
         }
-        [Authorize]
+
         [HttpPatch("updateListingStatus")]
         public async Task<IActionResult> UpdateListingStatus(int listingId, Status newStatus)
         {
-            var updated = await _listingRepository.UpdateStatusAsync(listingId, newStatus);
-            if (!updated)
+            Console.WriteLine(">> [UpdateListingStatus] Endpoint hit.");
+            Console.WriteLine($">> ListingId: {listingId}, NewStatus: {newStatus}");
+
+            try
             {
-                return NotFound("Listing not found or failed to update status.");
+                var updated = await _listingRepository.UpdateStatusAsync(listingId, newStatus);
+                Console.WriteLine($">> UpdateStatusAsync returned: {updated}");
+
+                if (!updated)
+                {
+                    Console.WriteLine(">> Listing not found or update failed.");
+                    return NotFound("Listing not found or failed to update status.");
+                }
+
+                Console.WriteLine(">> Listing status updated successfully.");
+                return Ok("Listing status updated successfully.");
             }
-            return Ok("Listing status updated successfully.");
+            catch (Exception ex)
+            {
+                Console.WriteLine(">> Exception in UpdateListingStatus: " + ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine(">> Inner Exception: " + ex.InnerException.Message);
+                }
+
+                return StatusCode(500, "Internal error occurred while updating listing.");
+            }
         }
+
         [Authorize]
         [HttpGet("checkStatus")]
         public async Task<IActionResult> CheckStatus(int listingId)

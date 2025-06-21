@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace PaymentService.Domain.Enums;
 public enum PaymentStatus
 {
-    Pending,
-    Completed,
-    Failed,
+    Pending=1,
+    Completed=2,
+    Failed=3,
 }
 
