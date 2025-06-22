@@ -74,6 +74,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentService.Application"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationsService", "src\NotificationService\API\NotificationsService\NotificationsService.csproj", "{13FCAE93-960A-4AD8-A9A0-BAD0DEFD3EEF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PaymentService", "PaymentService", "{8B104691-44BA-43E1-9D05-F73E068B4AB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsTests", "tests\PaymentsService\PaymentsTests\PaymentsTests.csproj", "{565B741E-1882-43B4-84F0-001BED14969B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -152,6 +156,10 @@ Global
 		{13FCAE93-960A-4AD8-A9A0-BAD0DEFD3EEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13FCAE93-960A-4AD8-A9A0-BAD0DEFD3EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13FCAE93-960A-4AD8-A9A0-BAD0DEFD3EEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{565B741E-1882-43B4-84F0-001BED14969B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{565B741E-1882-43B4-84F0-001BED14969B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{565B741E-1882-43B4-84F0-001BED14969B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{565B741E-1882-43B4-84F0-001BED14969B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,6 +195,8 @@ Global
 		{9505F776-3A54-4548-91C5-804956DEA075} = {AF566C67-745B-43E6-A4BF-8356C8E548FA}
 		{D2E159AE-2DC6-4A1D-BF95-6BC5829C05B1} = {AF566C67-745B-43E6-A4BF-8356C8E548FA}
 		{13FCAE93-960A-4AD8-A9A0-BAD0DEFD3EEF} = {7E154AC6-519B-46D4-8814-C34518ADCEFE}
+		{8B104691-44BA-43E1-9D05-F73E068B4AB5} = {533AF336-EFA4-4C2F-9080-1C92A8583AAD}
+		{565B741E-1882-43B4-84F0-001BED14969B} = {8B104691-44BA-43E1-9D05-F73E068B4AB5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1B32482E-F6DB-4EB3-BE7D-921ACE94A3BF}
