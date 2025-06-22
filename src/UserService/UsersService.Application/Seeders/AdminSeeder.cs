@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UsersService.Application;
+using UsersService.Application.Interfaces;
 using UsersService.Domain.Models;
 using UsersService.Domain.Repositories;
 

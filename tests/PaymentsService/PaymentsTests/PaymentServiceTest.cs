@@ -4,11 +4,11 @@ using Moq;
 using PaymentService.Application;
 using PaymentService.Application.Interfaces;
 using PaymentService.Application.Services;
-using PaymentService.Domain;
 using PaymentService.Domain.Enums;
 using PaymentService.Domain.Interfaces;
+using PaymentService.Domain.Models;
 
-namespace PaymentService.Tests 
+namespace PaymentService.Tests
 {
     public class PaymentsServiceTests
     {

@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PurchaseService.Application;
-using PurchaseService.Domain;
+using PurchaseService.Application.Interfaces;
+using PurchaseService.Application.Services;
+using PurchaseService.Domain.Models;
 using PurchaseService.Domain.Repositories;
 using System.Security.Cryptography;
 
@@ -86,6 +87,21 @@ builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IPurchaseService, CreatePurchaseService>();
 var app = builder.Build();
+using (var migrationScope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = migrationScope.ServiceProvider.GetRequiredService<DataContext>();
+        context.Database.Migrate(); // This will apply pending migrations
+        Console.WriteLine("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        var logger = migrationScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+        throw; // Re-throw in development, handle gracefully in production
+    }
+}
 app.UseAuthentication();
 app.UseAuthorization();
 // Configure the HTTP request pipeline.

@@ -6,9 +6,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
 using System.Text;
-
-using UsersService.Application;
+using UsersService.Application.Interfaces;
 using UsersService.Application.Producer;
+using UsersService.Application.Seeders;
+using UsersService.Application.Services;
 using UsersService.Domain;
 using UsersService.Domain.Models;
 using UsersService.Domain.Repositories;
@@ -89,7 +90,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
-builder.Services.AddSingleton<IJwtTokenService, User.Application.Services.JwtTokenService>();
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<ImanageUserService, manageUserService>();
 builder.Services.AddHttpClient();
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -100,6 +101,21 @@ builder.Services.AddHttpContextAccessor();
 
 
 var app = builder.Build();
+using (var migrationScope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = migrationScope.ServiceProvider.GetRequiredService<DataContext>();
+        context.Database.Migrate(); // This will apply pending migrations
+        Console.WriteLine("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        var logger = migrationScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+        throw; // Re-throw in development, handle gracefully in production
+    }
+}
 app.UseAuthentication();
 app.UseAuthorization();
 if (app.Environment.IsDevelopment())
@@ -116,7 +132,12 @@ var seeder = new AdminSeeder(
 );
 
 await seeder.SeedAsync();
+var Userseeder = new UserSeeder(
+    services.GetRequiredService<IRepository>(),
+    services.GetRequiredService<IPasswordHasher>()
 
+);
+await Userseeder.SeedAsync();
 
 app.UseHttpsRedirection();
 

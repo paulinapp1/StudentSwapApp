@@ -24,4 +24,8 @@
     <ProjectReference Include="..\..\ListingsService.Domain\ListingsService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="data\" />
+  </ItemGroup>
+
 </Project>

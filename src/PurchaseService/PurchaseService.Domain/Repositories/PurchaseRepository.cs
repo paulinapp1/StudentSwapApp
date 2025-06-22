@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PurchaseService.Domain.Enums;
+using PurchaseService.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

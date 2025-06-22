@@ -1,6 +1,5 @@
 using ListingsService.API.Controllers;
 using ListingsService.Domain.Models;
-using ListingsService.Application;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using ListingsService.API.DTO;
 using ListingsService.Domain.Enums;
 using System.Reflection;
+using ListingsService.Domain.Repositories;
+using ListingsService.Application.Interfaces;
 
 namespace ListingsService.Tests
 {

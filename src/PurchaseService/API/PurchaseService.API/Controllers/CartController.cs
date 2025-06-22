@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PurchaseService.Application;
+using PurchaseService.Application.Interfaces;
 using PurchaseService.Domain;
 using PurchaseService.Domain.Repositories;
 using System.Security.Claims;
@@ -31,7 +31,7 @@ namespace PurchaseService.API.Controllers
             bool alreadyInCart = await _repository.IsItemInCartAsync(listingId, userId);
             if (alreadyInCart)
                 return Conflict("Item is already in your cart.");
-
+            
             var result = await _cartService.AddToCartAsync(listingId, userId);
             return Ok(result);
         }

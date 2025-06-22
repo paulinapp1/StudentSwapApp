@@ -1,12 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using ListingsService.Domain.Models;
-using ListingsService.Application;
 using ListingsService.API;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
 using UsersService.Domain.Models;
+using ListingsService.Domain.Repositories;
+using UsersService.Application.Seeders;
+using UsersService.Domain.Repositories;
+using ListingsService.Application.Seeders;
+using ListingsService.Application.Services;
+using ListingsService.Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +94,21 @@ builder.Services.AddScoped<IAddListingService, AddListingService>();
 
 
 var app = builder.Build();
+using (var migrationScope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = migrationScope.ServiceProvider.GetRequiredService<DataContext>();
+        context.Database.Migrate(); 
+        Console.WriteLine("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        var logger = migrationScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+        throw; 
+    }
+}
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -98,7 +118,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+var categorySeeder = new SeedCategory(
+    services.GetRequiredService<IListingRepository>()
+  
 
+);
+await categorySeeder.SeedCategoryAsync();
+var listingSeeder = new SeedListing(
+    services.GetRequiredService<IListingRepository>()
+
+
+);
+await listingSeeder.SeedListingAsync();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

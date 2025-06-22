@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UsersService.Application;
+using UsersService.Application.Interfaces;
+using UsersService.Application.Producer;
+using UsersService.Application.Services;
 using UsersService.Domain.Repositories;
 
 namespace UserService.Tests;
@@ -22,10 +24,13 @@ public class test
         var jwtTokenServiceMock = new Mock<IJwtTokenService>();
         var repositoryMock = new Mock<IRepository>();
         var passwordHasherMock = new Mock<IPasswordHasher>();
+        var kafkaMock = new Mock<IKafkaProducer>();
         var loginService = new LoginService(
         jwtTokenServiceMock.Object,
         repositoryMock.Object,
-        passwordHasherMock.Object
+        passwordHasherMock.Object,
+        kafkaMock.Object
+        
     );
 
         // Act
@@ -49,12 +54,14 @@ public class test
         var jwtTokenServiceMock = new Mock<IJwtTokenService>();
         var repositoryMock = new Mock<IRepository>();
         var passwordHasherMock = new Mock<IPasswordHasher>();
-
+        var kafkaMock = new Mock<IKafkaProducer>();
         var loginService = new LoginService(
-            jwtTokenServiceMock.Object,
-            repositoryMock.Object,
-            passwordHasherMock.Object
-        );
+        jwtTokenServiceMock.Object,
+        repositoryMock.Object,
+        passwordHasherMock.Object,
+        kafkaMock.Object
+
+    );
 
         // Act
         var result = loginService.IsValidEmail(email);
@@ -74,12 +81,14 @@ public class test
         var jwtTokenServiceMock = new Mock<IJwtTokenService>();
         var repositoryMock = new Mock<IRepository>();
         var passwordHasherMock = new Mock<IPasswordHasher>();
-
+        var kafkaMock = new Mock<IKafkaProducer>();
         var loginService = new LoginService(
-            jwtTokenServiceMock.Object,
-            repositoryMock.Object,
-            passwordHasherMock.Object
-        );
+        jwtTokenServiceMock.Object,
+        repositoryMock.Object,
+        passwordHasherMock.Object,
+        kafkaMock.Object
+
+    );
 
         // Act
         var exception = Record.Exception(() => loginService.ValidatePassword(password));
@@ -103,12 +112,14 @@ public class test
         var jwtTokenServiceMock = new Mock<IJwtTokenService>();
         var repositoryMock = new Mock<IRepository>();
         var passwordHasherMock = new Mock<IPasswordHasher>();
-
+        var kafkaMock = new Mock<IKafkaProducer>();
         var loginService = new LoginService(
-            jwtTokenServiceMock.Object,
-            repositoryMock.Object,
-            passwordHasherMock.Object
-        );
+        jwtTokenServiceMock.Object,
+        repositoryMock.Object,
+        passwordHasherMock.Object,
+        kafkaMock.Object
+
+    );
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => loginService.ValidatePassword(password));
@@ -121,12 +132,14 @@ public class test
         var jwtTokenServiceMock = new Mock<IJwtTokenService>();
         var repositoryMock = new Mock<IRepository>();
         var passwordHasherMock = new Mock<IPasswordHasher>();
-
+        var kafkaMock = new Mock<IKafkaProducer>();
         var loginService = new LoginService(
-            jwtTokenServiceMock.Object,
-            repositoryMock.Object,
-            passwordHasherMock.Object
-        );
+        jwtTokenServiceMock.Object,
+        repositoryMock.Object,
+        passwordHasherMock.Object,
+        kafkaMock.Object
+
+    );
 
         var invalidPassword = "short";
 

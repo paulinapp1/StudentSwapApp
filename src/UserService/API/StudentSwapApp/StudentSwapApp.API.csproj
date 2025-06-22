@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\UsersService.Domain\UsersService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="data\" />
+  </ItemGroup>
+
 </Project>

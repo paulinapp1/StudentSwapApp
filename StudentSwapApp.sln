@@ -76,7 +76,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationsService", "src
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PaymentService", "PaymentService", "{8B104691-44BA-43E1-9D05-F73E068B4AB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentsTests", "tests\PaymentsService\PaymentsTests\PaymentsTests.csproj", "{565B741E-1882-43B4-84F0-001BED14969B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentsTests", "tests\PaymentsService\PaymentsTests\PaymentsTests.csproj", "{565B741E-1882-43B4-84F0-001BED14969B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

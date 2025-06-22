@@ -14,6 +14,8 @@ namespace PurchaseService.Application.DTO
         [JsonProperty("productPrice")]
         public decimal Price { get; set; }
 
+        public int Status { get; set; }
+
     }
 
 }

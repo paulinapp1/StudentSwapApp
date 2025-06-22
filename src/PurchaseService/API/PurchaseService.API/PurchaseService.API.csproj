@@ -25,4 +25,8 @@
     <ProjectReference Include="..\..\PurchaseService.Domain\PurchaseService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="data\" />
+  </ItemGroup>
+
 </Project>

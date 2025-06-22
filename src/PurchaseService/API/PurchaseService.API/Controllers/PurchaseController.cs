@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PurchaseService.Application;
 using PurchaseService.Application.DTO;
+using PurchaseService.Application.Interfaces;
 using PurchaseService.Domain.Repositories;
 using System.Security.Claims;
 

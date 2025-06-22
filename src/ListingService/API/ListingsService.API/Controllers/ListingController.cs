@@ -1,7 +1,8 @@
 ﻿using ListingsService.API.DTO;
-using ListingsService.Application;
+using ListingsService.Application.Interfaces;
 using ListingsService.Domain.Enums;
 using ListingsService.Domain.Models;
+using ListingsService.Domain.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ namespace ListingsService.API.Controllers
         }
 
         [HttpGet("getAllListings")]
-        public async Task<ActionResult> GetAllListings()
+        public async Task<IActionResult> GetAllListings()
         {
             var result = await  _listingRepository.GetAllAsync();
             return Ok(result);

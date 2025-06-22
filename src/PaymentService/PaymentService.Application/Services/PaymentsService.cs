@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PaymentService.Application.DTO;
+using PaymentService.Domain.Models;
 
 namespace PaymentService.Application.Services
 {
@@ -41,16 +43,7 @@ namespace PaymentService.Application.Services
 
             await _repository.AddAsync(transaction);
 
-            // Usuwanie z koszyków
-           // var deleteResponse = await httpClient.DeleteAsync(
-             //   $"http://purchaseservice.api:8080/purchase/Cart/removeListingFromCarts?listingId={request.ListingId}");
-
-           // if (!deleteResponse.IsSuccessStatusCode)
-          //  {
-           //     throw new Exception($"Cart removal failed: {deleteResponse.StatusCode}");
-          //  }
-
-            // Aktualizacja statusu ogłoszenia
+           
             var updateStatusUrl =
                 $"http://listingsservice.api:8080/listings/Listing/updateListingStatus?listingId={request.ListingId}&status=SOLD";
 
