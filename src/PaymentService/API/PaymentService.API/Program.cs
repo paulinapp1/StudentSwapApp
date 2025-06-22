@@ -99,8 +99,24 @@ namespace PaymentService.API
                 try
                 {
                     var context = migrationScope.ServiceProvider.GetRequiredService<DataContext>();
-                    context.Database.Migrate();
-                    Console.WriteLine("Database migrations applied successfully.");
+
+                    // Check if a specific table exists before applying migrations
+                    var connection = context.Database.GetDbConnection();
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Payments'";
+
+                    var exists = command.ExecuteScalar() != null;
+
+                    if (!exists)
+                    {
+                        context.Database.Migrate();
+                        Console.WriteLine("Database migrations applied successfully.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Migration skipped: relation already exists.");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -109,7 +125,6 @@ namespace PaymentService.API
                     throw;
                 }
             }
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Moq;
 using PaymentService.Application;
+using PaymentService.Application.DTO;
 using PaymentService.Application.Interfaces;
 using PaymentService.Application.Services;
 using PaymentService.Domain.Enums;
