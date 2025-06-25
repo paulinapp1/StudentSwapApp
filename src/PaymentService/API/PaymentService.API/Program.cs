@@ -100,7 +100,7 @@ namespace PaymentService.API
                 {
                     var context = migrationScope.ServiceProvider.GetRequiredService<DataContext>();
 
-                    // Check if a specific table exists before applying migrations
+                    
                     var connection = context.Database.GetDbConnection();
                     connection.Open();
                     var command = connection.CreateCommand();
